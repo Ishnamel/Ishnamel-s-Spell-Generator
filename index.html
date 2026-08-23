@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcane Grimoire - Syntactic Spell Compiler</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-title">
+            <h1>Ishnamel's Syntactic Spell Compiler</h1>
+            <p>Assemble elemental matrices & staccato incantations</p>
+        </div>
+
+        <!-- Book-Shaped Grimoire Button -->
+        <button class="tome-btn" onclick="openGrimoireModal()">
+            <div class="book-spine"></div>
+            <div class="tome-icon">📖</div>
+            <div class="tome-text">
+                <strong>Arcane Grimoire</strong>
+                <span id="tomeCounter">12 Presets & Custom Codex</span>
+            </div>
+        </button>
+    </header>
+
+    <main class="app-grid">
+        <!-- LEFT: SPELL MATRIX BUILDER -->
+        <section class="panel">
+            <div class="section-title">1. Elemental Root</div>
+            <div class="grid-options" id="elementContainer"></div>
+
+            <div class="section-title">2. Delivery Archetype</div>
+            <div class="grid-options" id="deliveryContainer"></div>
+
+            <!-- 2b. HLAKBIL SOMATIC VESSEL SELECTOR -->
+            <div id="bodyPartSection" style="display: none; margin-bottom: 1.3rem;">
+                <div class="section-title">
+                    <span>Somatic Vessel / Target Anatomy</span>
+                    <span class="sub-title-hint">Select targeted limb or core</span>
+                </div>
+                <div class="bp-grid" id="bodyPartContainer"></div>
+            </div>
+            <div class="section-title">
+                <span>3. Append Modifiers</span>
+                <span class="sub-title-hint">Click to chain operation</span>
+            </div>
+
+            <div class="cat-tabs" id="categoryTabs"></div>
+            <div class="modifier-pool" id="modifierPool"></div>
+
+            <div class="section-title">
+                <span>Active Spell Sequence</span>
+                <button class="clear-btn" onclick="clearModifiers()">Clear Chain</button>
+            </div>
+            <div class="pipeline-container" id="pipeline"></div>
+        </section>
+
+        <!-- RIGHT: CHANT & SYNTHESIS OUTPUT -->
+        <section class="panel output-panel">
+<!-- INTERACTIVE ARCANE SPELL CIRCLE -->
+            <div class="circle-card">
+                <div class="circle-header">
+                    <span>Arcane Resonance Geometry</span>
+                    <div class="circle-action-bar">
+                        <button class="circle-action-btn" id="audioToggleBtn" onclick="toggleArcaneBGM()" title="Toggle Arcane Ambient BGM">
+        <span>🔊</span> BGM: Off
+    </button>
+                        <button class="circle-action-btn" onclick="triggerInscriptionAnimation()" title="Manifest connected drawing sequence">
+                            <span>▶</span> Manifest
+                        </button>
+                        <button class="circle-action-btn export-btn" id="exportGifBtn" onclick="exportSpellCircleGIF()" title="Export as animated GIF">
+                            <span>💾</span> Save as GIF
+                        </button>
+                    </div>
+                </div>
+                <div id="spellCircleContainer" class="circle-wrapper" title="Click circle to trigger connected inscription animation"></div>
+            </div>
+            <div class="chant-box">
+                <div class="chant-label">
+                    <span>Standard Academic Chant</span>
+                    <span style="color: var(--accent);">Formal Syntax</span>
+                </div>
+                <div class="chant-text" id="standardChant">---</div>
+            </div>
+
+            <div class="chant-box high-mage">
+                <div class="chant-label">
+                    <span>High Mage Contracted Chant</span>
+                    <span style="color: var(--purple);">Staccato Speedcast</span>
+                </div>
+                <div class="chant-text" id="highChant">---</div>
+            </div>
+
+            <div class="desc-box">
+                <div class="desc-header">
+                    <h3 id="spellTitle">Spell Manifestation</h3>
+                    <button class="inscribe-btn" onclick="openSaveModal()">
+                        <span>📜</span> Inscribe into Grimoire
+                    </button>
+                </div>
+                
+                <div id="spellStory">Select elemental components to begin matrix synthesis.</div>
+                
+                <div id="synergyContainer"></div>
+
+                <div class="mod-breakdown">
+                    <strong>Syntactic Modifier Breakdown:</strong>
+                    <ul id="breakdownList"></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- GRIMOIRE POP-OUT MODAL (SPELL LIST) -->
+    <div class="modal-overlay" id="grimoireModal">
+        <div class="modal-window">
+            <div class="modal-header">
+                <h2><span>📖</span> Arcane Grimoire & Codex</h2>
+                <button class="modal-close" onclick="closeGrimoireModal()">&times;</button>
+            </div>
+            <div class="modal-nav">
+                <button class="modal-nav-btn active" id="tabArchetypes" onclick="switchGrimoireTab('archetypes')">Ancient Archetypes (Presets)</button>
+                <button class="modal-nav-btn" id="tabCustom" onclick="switchGrimoireTab('custom')">My Inscribed Spells (<span id="customCount">0</span>)</button>
+            </div>
+            <div class="modal-body" id="grimoireListContainer">
+                <!-- Spells rendered via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- INSCRIBE SPELL MODAL -->
+    <div class="modal-overlay" id="saveModal">
+        <div class="modal-window inscribe-window">
+            <div class="modal-header">
+                <h2><span>📜</span> Inscribe Spell into Grimoire</h2>
+                <button class="modal-close" onclick="closeSaveModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding-top: 1rem;">
+                <div class="form-group">
+                    <label>Spell Title / True Name</label>
+                    <input type="text" class="form-input" id="saveSpellName" placeholder="e.g., Lance of the Piercing Sun">
+                </div>
+
+                <div class="form-group">
+                    <label>Spell Description & Tactical Notes</label>
+                    <textarea class="form-textarea" id="saveSpellDesc" placeholder="Describe the behavior, origin, or combat utility of this spell..."></textarea>
+                </div>
+
+                <div class="signature-box">
+                    <strong style="color: var(--purple);">Chant Signature:</strong>
+                    <div id="saveSpellChant" class="signature-chant">---</div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="clear-btn form-btn" onclick="closeSaveModal()">Cancel</button>
+                    <button class="inscribe-btn form-btn" onclick="confirmSaveSpell()">Inscribe into Codex</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT MODULES -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+       <script src="js/data.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/circle.js"></script>
+    <script src="js/compiler.js"></script>
+    <script src="js/grimoire.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
