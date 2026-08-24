@@ -12,7 +12,7 @@
     <header>
         <div class="header-title">
             <h1>Ishnamel's Syntactic Spell Compiler</h1>
-            <p>Assemble elemental matrices & staccato incantations</p>
+            <p>Assemble elemental matrices, dual reactions & closed-circuit arrays</p>
         </div>
 
         <!-- Book-Shaped Grimoire Button -->
@@ -27,10 +27,49 @@
     </header>
 
     <main class="app-grid">
-        <!-- LEFT: SPELL MATRIX BUILDER -->
+        <!-- LEFT: SPELL & ARRAY MATRIX BUILDER -->
         <section class="panel">
-            <div class="section-title">1. Elemental Root</div>
+
+            <!-- MODE SWITCHER (SINGLE SPELL vs MAGIC ARRAY) -->
+            <div class="mode-switch-bar">
+                <button class="mode-switch-btn active" id="tabModeSingle" onclick="switchCompilerMode('single')">
+                    <span>🔮</span> Single Spell Matrix
+                </button>
+                <button class="mode-switch-btn" id="tabModeArray" onclick="switchCompilerMode('array')">
+                    <span>🌀</span> Tri-Circle Magic Array
+                </button>
+            </div>
+
+            <!-- TRI-NODE ARRAY NAVIGATION (Visible only in Array Mode) -->
+            <div class="array-node-nav" id="arrayNodeNav" style="display: none;">
+                <button class="array-node-tab active" data-node="alpha" onclick="setActiveArrayNode('alpha')">
+                    <span class="node-badge">Node α</span> Genesis
+                </button>
+                <button class="array-node-tab" data-node="beta" onclick="setActiveArrayNode('beta')">
+                    <span class="node-badge">Node β</span> Modulation
+                </button>
+                <button class="array-node-tab" data-node="gamma" onclick="setActiveArrayNode('gamma')">
+                    <span class="node-badge">Node γ</span> Apex
+                </button>
+            </div>
+
+            <!-- 1. ELEMENTAL ROOT & DUAL CAST BUTTON -->
+            <div class="section-title">
+                <span>1. Elemental Root</span>
+                <button class="mini-action-btn" id="dualCastToggleBtn" onclick="toggleDualCastUI()" title="Toggle Dual-Casting Secondary Element">
+                    <span>➕</span> Dual Cast
+                </button>
+            </div>
             <div class="grid-options" id="elementContainer"></div>
+
+            <!-- 1b. SECONDARY ELEMENT CONTAINER (BIFURCATED HYBRID CORE) -->
+            <div id="secondaryElementSection" style="display: none; margin-top: -0.4rem; margin-bottom: 1.3rem;">
+                <div class="section-title secondary-title">
+                    <span>Secondary Root (Hybrid Core)</span>
+                    <span class="sub-title-hint">Dual Reaction</span>
+                </div>
+                <div class="grid-options" id="secondaryElementContainer"></div>
+            </div>
 
             <div class="section-title">2. Delivery Archetype</div>
             <div class="grid-options" id="deliveryContainer"></div>
@@ -43,6 +82,7 @@
                 </div>
                 <div class="bp-grid" id="bodyPartContainer"></div>
             </div>
+
             <div class="section-title">
                 <span>3. Append Modifiers</span>
                 <span class="sub-title-hint">Click to chain operation</span>
@@ -60,14 +100,14 @@
 
         <!-- RIGHT: CHANT & SYNTHESIS OUTPUT -->
         <section class="panel output-panel">
-<!-- INTERACTIVE ARCANE SPELL CIRCLE -->
+            <!-- INTERACTIVE ARCANE SPELL CIRCLE / ARRAY CANVAS -->
             <div class="circle-card">
                 <div class="circle-header">
                     <span>Arcane Resonance Geometry</span>
                     <div class="circle-action-bar">
                         <button class="circle-action-btn" id="audioToggleBtn" onclick="toggleArcaneBGM()" title="Toggle Arcane Ambient BGM">
-        <span>🔊</span> BGM: Off
-    </button>
+                            <span>🔊</span> BGM: Off
+                        </button>
                         <button class="circle-action-btn" onclick="triggerInscriptionAnimation()" title="Manifest connected drawing sequence">
                             <span>▶</span> Manifest
                         </button>
@@ -78,6 +118,7 @@
                 </div>
                 <div id="spellCircleContainer" class="circle-wrapper" title="Click circle to trigger connected inscription animation"></div>
             </div>
+            
             <div class="chant-box">
                 <div class="chant-label">
                     <span>Standard Academic Chant</span>
@@ -163,11 +204,17 @@
     </div>
 
     <!-- SCRIPT MODULES -->
-      <script src="js/tone.js"></script>
-       <script src="js/data.js"></script>
+     <script src="js/tone.js"></script>
+    <script src="js/data.js"></script>
     <script src="js/audio.js"></script>
     <script src="js/circle.js"></script>
+    <script src="js/exporter.js"></script>
+    <script src="js/flavor.js"></script>
     <script src="js/compiler.js"></script>
+    <script src="js/array-grimoire.js"></script>
+    <script src="js/array-data.js"></script>
+    <script src="js/array-circle.js"></script> <!-- ADDED HERE -->
+    <script src="js/array-engine.js"></script>
     <script src="js/grimoire.js"></script>
     <script src="js/app.js"></script>
 </body>

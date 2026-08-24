@@ -853,3 +853,286 @@ header {
     color: #000;
     box-shadow: 0 0 12px var(--accent-glow);
 }
+/* DUAL CAST BUTTON & SECONDARY ELEMENT PANEL */
+.mini-action-btn {
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.22rem 0.55rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.2s ease;
+}
+
+.mini-action-btn:hover {
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.mini-action-btn.active {
+    background: rgba(192, 132, 252, 0.2);
+    border-color: var(--purple);
+    color: var(--purple);
+    box-shadow: 0 0 10px rgba(192, 132, 252, 0.35);
+}
+
+.mini-action-btn.active:hover {
+    background: var(--purple);
+    color: #000;
+}
+
+.secondary-title {
+    font-size: 0.85rem;
+    color: var(--purple);
+    border-bottom: 1px dashed var(--panel-border);
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.3rem;
+}
+
+.opt-card.dual-active {
+    border-color: var(--purple);
+    background: rgba(192, 132, 252, 0.18);
+    box-shadow: 0 0 10px rgba(192, 132, 252, 0.4);
+}
+
+.opt-card.primary-conflict {
+    opacity: 0.45;
+}
+/* HARMONIC SAME-ELEMENT RESONANCE CARD HIGHLIGHT */
+.opt-card.resonance-card {
+    border-color: rgba(212, 175, 55, 0.4);
+}
+
+.opt-card.resonance-card.dual-active {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.25), rgba(192, 132, 252, 0.25));
+    box-shadow: 0 0 12px var(--accent-glow), 0 0 8px rgba(192, 132, 252, 0.4);
+}
+/* ==========================================================================
+   GLOBAL THEME SKINS & VISUAL PALETTE OVERRIDES
+   ========================================================================== */
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.skin-selector-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--card-bg);
+    border: 1px solid var(--panel-border);
+    padding: 0.35rem 0.65rem;
+    border-radius: 8px;
+}
+
+.skin-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+}
+
+.skin-dropdown {
+    background: #090b10;
+    border: 1px solid var(--panel-border);
+    color: var(--text-main);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.skin-dropdown:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+/* 1. BRASS ASTROLABE SKIN */
+[data-skin="astrolabe"] {
+    --bg: #030712;
+    --panel: #0b1326;
+    --panel-border: #233554;
+    --accent: #e5b358;
+    --accent-glow: rgba(229, 179, 88, 0.4);
+    --card-bg: #111d38;
+    --cyan: #5eead4;
+    --purple: #f59e0b;
+}
+
+/* 2. MAGITECH / CYBER-ARCANE HOLOGRAM SKIN */
+[data-skin="magitech"] {
+    --bg: #010409;
+    --panel: #050d1a;
+    --panel-border: #0e3a5a;
+    --accent: #00f0ff;
+    --accent-glow: rgba(0, 240, 255, 0.45);
+    --card-bg: #07162c;
+    --purple: #ff007f;
+    --cyan: #39ff14;
+}
+
+/* 3. ANCIENT WEATHERED STONE STELE SKIN */
+[data-skin="stone"] {
+    --bg: #0a0c0f;
+    --panel: #14171d;
+    --panel-border: #2e3440;
+    --accent: #4ade80;
+    --accent-glow: rgba(74, 222, 128, 0.35);
+    --card-bg: #1c2027;
+    --cyan: #38bdf8;
+    --purple: #a3e635;
+}
+
+/* 4. FORBIDDEN BLOOD PACT SKIN */
+[data-skin="blood"] {
+    --bg: #060102;
+    --panel: #140305;
+    --panel-border: #450a0a;
+    --accent: #ef4444;
+    --accent-glow: rgba(239, 68, 68, 0.5);
+    --card-bg: #22070a;
+    --cyan: #f87171;
+    --purple: #b91c1c;
+}
+
+/* 5. MONOCHROME MANGA / ANIME INK SKIN */
+[data-skin="manga"] {
+    --bg: #09090b;
+    --panel: #18181b;
+    --panel-border: #3f3f46;
+    --accent: #ffffff;
+    --accent-glow: rgba(255, 255, 255, 0.4);
+    --card-bg: #27272a;
+    --text-main: #fafafa;
+    --text-dim: #a1a1aa;
+    --cyan: #e4e4e7;
+    --purple: #d4d4d8;
+}
+
+/* 6. ANCIENT TOME / PARCHMENT SKIN */
+[data-skin="parchment"] {
+    --bg: #1c130c;
+    --panel: #2d1d13;
+    --panel-border: #543718;
+    --accent: #d49b42;
+    --accent-glow: rgba(212, 155, 66, 0.35);
+    --card-bg: #3b271a;
+    --text-main: #f5eedc;
+    --text-dim: #c4ad8f;
+    --cyan: #e8caa4;
+    --purple: #b45309;
+}
+/* ==========================================================================
+   MAGIC ARRAY MODE SWITCHER & TRI-NODE TABS
+   ========================================================================== */
+
+.mode-switch-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    background: #090b10;
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 0.35rem;
+    margin-bottom: 1.2rem;
+}
+
+.mode-switch-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-dim);
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+}
+
+.mode-switch-btn:hover {
+    color: var(--text-main);
+    border-color: var(--panel-border);
+}
+
+.mode-switch-btn.active {
+    background: var(--card-bg);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.array-node-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.4rem;
+    background: #0f121a;
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 0.4rem;
+    margin-bottom: 1.2rem;
+    animation: fadeIn 0.25s ease;
+}
+
+.array-node-tab {
+    background: var(--card-bg);
+    border: 1px solid var(--panel-border);
+    color: var(--text-dim);
+    padding: 0.45rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    transition: all 0.2s ease;
+}
+
+.array-node-tab .node-badge {
+    font-size: 0.65rem;
+    color: var(--purple);
+    font-weight: 700;
+}
+
+.array-node-tab:hover {
+    border-color: var(--cyan);
+    color: var(--text-main);
+}
+
+.array-node-tab.active {
+    background: rgba(192, 132, 252, 0.15);
+    border-color: var(--purple);
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(192, 132, 252, 0.35);
+}
+
+.array-node-tab.active .node-badge {
+    color: var(--accent);
+}
+
+.mod-chip.disabled-mod {
+    opacity: 0.35;
+    cursor: not-allowed;
+    border-color: transparent !important;
+}
+
+.mod-chip.disabled-mod:hover {
+    transform: none !important;
+    border-color: transparent !important;
+}
