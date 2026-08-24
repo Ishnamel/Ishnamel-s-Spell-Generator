@@ -1,5 +1,6 @@
 /* ==========================================================================
-   DYNAMIC SVG ARCANE SPELL CIRCLE GENERATOR (INSCRIPTION & GIF ENGINE)
+   DYNAMIC SVG ARCANE SPELL CIRCLE GENERATOR (INSCRIPTION, YIN-YANG DUAL-CORE,
+   HARMONIC OVERCHARGE RUNE UPGRADES & GIF ENGINE)
    ========================================================================== */
 
 let circleState = {
@@ -24,7 +25,7 @@ const LATIN_TO_RUNIC = {
     'F': 'ᚠ', 'G': 'ᚷ', 'H': 'ᚺ', 'I': 'ᛁ', 'J': 'ᛃ',
     'K': 'ᚲ', 'L': 'ᛚ', 'M': 'ᛗ', 'N': 'ᚾ', 'O': 'ᛟ',
     'P': 'ᛈ', 'Q': 'ᚲ', 'R': 'ᚱ', 'S': 'ᛋ', 'T': 'ᛏ',
-    'U': 'ᚢ', 'V': 'ᚹ', 'W': 'ᚹ', 'X': 'ᛉ', 'Y': 'ᛇ',
+    'U': 'ᢢ', 'V': 'ᚹ', 'W': 'ᚹ', 'X': 'ᛉ', 'Y': 'ᛇ',
     'Z': 'ᛉ', '-': '᛫', '!': '', ' ': '᛫', '0': 'ᛟ',
     '1': 'ᛁ', '2': 'ᛚ', '3': 'ᚦ', '4': 'ᚠ', '5': 'ᚱ',
     '6': 'ᛋ', '7': 'ᛏ', '8': 'ᛒ', '9': 'ᛗ'
@@ -86,14 +87,14 @@ const DURATION_METRICS = {
     litu:   { speed: 0.0,  glow: 0.30, blur: 1.0,  scale: 0.06,  opacityMax: 0.15, opacityMin: 0.05,  animType: 'wave' }
 };
 
-function calculateHeartbeatMetrics(activeMods) {
+function calculateHeartbeatMetrics(activeMods, isOvercharge = false) {
     let speed = 3.5;
-    let glow = 1.0;
-    let blur = 3.5;
-    let scaleDelta = 0.05;
-    let opacityMin = 0.55;
-    let opacityMax = 0.95;
-    let animType = 'standard';
+    let glow = isOvercharge ? 1.4 : 1.0;
+    let blur = isOvercharge ? 4.5 : 3.5;
+    let scaleDelta = isOvercharge ? 0.08 : 0.05;
+    let opacityMin = isOvercharge ? 0.65 : 0.55;
+    let opacityMax = 0.98;
+    let animType = isOvercharge ? 'overdrive' : 'standard';
 
     activeMods.forEach(mod => {
         if (INTENSITY_METRICS[mod.id]) {
@@ -119,23 +120,21 @@ function calculateHeartbeatMetrics(activeMods) {
     });
 
     speed = Math.max(0.35, Math.min(10.0, speed));
-    glow = Math.max(0.15, Math.min(3.2, glow));
-    blur = Math.max(1.0, Math.min(9.5, blur));
-    scaleDelta = Math.max(0.01, Math.min(0.16, scaleDelta));
-    opacityMin = Math.max(0.08, Math.min(0.80, opacityMin));
+    glow = Math.max(0.15, Math.min(3.5, glow));
+    blur = Math.max(1.0, Math.min(10.5, blur));
+    scaleDelta = Math.max(0.01, Math.min(0.18, scaleDelta));
+    opacityMin = Math.max(0.08, Math.min(0.85, opacityMin));
     opacityMax = Math.max(0.35, Math.min(1.00, opacityMax));
 
     return { speed, glow, blur, scaleDelta, opacityMin, opacityMax, animType };
 }
 
-// 4. CENTER ELEMENTAL CORE RUNES (LIGHTNING IS ᚦ ENCLOSED IN DIAMOND)
+// 4a. STANDARD ELEMENTAL CORE RUNES (SINGLE ELEMENT)
 function getElementalRunePath(elementId) {
     switch (elementId) {
-        case 'iklad': // ANGULAR DIAGONAL STAVE RUNE
+        case 'iklad':
             return `
-                <!-- Central Vertical Stave -->
                 <line x1="0" y1="-32" x2="0" y2="32" stroke="currentColor" stroke-width="4.5" stroke-linecap="square"/>
-                <!-- Diagonal Stave Cross -->
                 <polyline points="0,-32 18,-11 -18,11 0,32" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="miter" stroke-miterlimit="4"/>
             `;
         case 'sfalhoy':
@@ -182,6 +181,92 @@ function getElementalRunePath(elementId) {
                 <polygon points="0,30 26,-15 -26,-15" fill="none" stroke="currentColor" stroke-width="2"/>
                 <circle cx="0" cy="0" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
                 <circle cx="0" cy="0" r="3" fill="currentColor"/>
+            `;
+    }
+}
+
+// 4b. UPGRADED OVERCHARGED CORE RUNES (FOR DUAL SAME-ELEMENT HARMONIC RESONANCE)
+function getOverchargedRunePath(elementId) {
+    switch (elementId) {
+        case 'sfalhoy':
+            return `
+                <polygon points="0,-42 36,22 -36,22" fill="none" stroke="currentColor" stroke-width="3" filter="url(#arcaneGlow)"/>
+                <polygon points="0,42 36,-22 -36,-22" fill="none" stroke="currentColor" stroke-width="2" opacity="0.85"/>
+                <polygon points="0,-26 22,14 -22,14" fill="none" stroke="currentColor" stroke-width="2"/>
+                <circle cx="0" cy="0" r="9" fill="currentColor"/>
+                <line x1="0" y1="-46" x2="0" y2="-34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="0" y1="34" x2="0" y2="46" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="-38" y1="-22" x2="-28" y2="-16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="28" y1="16" x2="38" y2="22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="-38" y1="22" x2="-28" y2="16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="28" y1="-16" x2="38" y2="-22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            `;
+
+        case 'hanhum':
+            return `
+                <circle cx="0" cy="0" r="38" fill="none" stroke="currentColor" stroke-width="2.5" stroke-dasharray="8 4" filter="url(#arcaneGlow)"/>
+                <circle cx="0" cy="0" r="24" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="M-32,0 Q0,-32 32,0 Q0,32 -32,0" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                <path d="M0,-32 Q32,0 0,32 Q-32,0 0,-32" fill="none" stroke="currentColor" stroke-width="2"/>
+                <circle cx="0" cy="0" r="11" fill="currentColor"/>
+                <circle cx="0" cy="0" r="5" fill="#0b0d13"/>
+                <path d="M-36,-12 Q-20,-36 0,-38 M36,12 Q20,36 0,38" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            `;
+
+        case 'falga':
+            return `
+                <rect x="-30" y="-30" width="60" height="60" fill="none" stroke="currentColor" stroke-width="2.8" filter="url(#arcaneGlow)"/>
+                <rect x="-30" y="-30" width="60" height="60" fill="none" stroke="currentColor" stroke-width="2" transform="rotate(45)"/>
+                <polygon points="0,-38 38,0 0,38 -38,0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3 3"/>
+                <rect x="-14" y="-14" width="28" height="28" fill="currentColor"/>
+                <rect x="-6" y="-6" width="12" height="12" fill="#0b0d13"/>
+            `;
+
+        case 'jalfinn':
+            return `
+                <circle cx="0" cy="0" r="38" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="8 3" filter="url(#arcaneGlow)"/>
+                <path d="M0,0 Q24,-20 20,-38 M0,0 Q-24,-20 -38,7 M0,0 Q7,24 27,27 M0,0 Q-7,24 -27,27" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                <path d="M0,0 Q-20,-24 -7,-38 M0,0 Q20,-24 38,-7 M0,0 Q-24,7 -27,-27 M0,0 Q24,7 27,-27" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.8"/>
+                <circle cx="0" cy="0" r="8" fill="currentColor"/>
+                <circle cx="0" cy="0" r="3" fill="#0b0d13"/>
+            `;
+
+        case 'iklad':
+            return `
+                <line x1="0" y1="-42" x2="0" y2="42" stroke="currentColor" stroke-width="5" stroke-linecap="square" filter="url(#arcaneGlow)"/>
+                <line x1="-42" y1="0" x2="42" y2="0" stroke="currentColor" stroke-width="3" stroke-linecap="square"/>
+                <polyline points="0,-42 22,-14 -22,14 0,42" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="miter"/>
+                <polyline points="-42,0 -14,-22 14,22 42,0" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="miter"/>
+                <polygon points="0,-36 25,-25 36,0 25,25 0,36 -25,25 -36,0 -25,-25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3 3"/>
+            `;
+
+        case 'erlaaw':
+            return `
+                <polygon points="0,-42 9,-13 39,-13 16,5 25,34 0,18 -25,34 -16,5 -39,-13 -9,-13" fill="none" stroke="currentColor" stroke-width="2.8" filter="url(#arcaneGlow)"/>
+                <polygon points="0,42 9,13 39,13 16,-5 25,-34 0,-18 -25,-34 -16,-5 -39,13 -9,13" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.85"/>
+                <circle cx="0" cy="0" r="11" fill="currentColor"/>
+                <circle cx="0" cy="0" r="4" fill="#0b0d13"/>
+            `;
+
+        case 'worulim':
+            return `
+                <circle cx="0" cy="0" r="38" fill="none" stroke="currentColor" stroke-width="3.2" filter="url(#arcaneGlow)"/>
+                <circle cx="0" cy="0" r="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-dasharray="4 2"/>
+                <circle cx="0" cy="0" r="18" fill="currentColor"/>
+                <circle cx="0" cy="0" r="8" fill="#0b0d13"/>
+                <path d="M-36,-36 Q0,-14 36,36 M36,-36 Q0,-14 -36,36" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                <path d="M-36,0 Q-14,0 0,0 Q14,0 36,0 M0,-36 Q0,-14 0,0 Q0,14 0,36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 3"/>
+            `;
+
+        case 'amin':
+        default:
+            return `
+                <polygon points="0,-40 35,20 -35,20" fill="none" stroke="currentColor" stroke-width="2.8" filter="url(#arcaneGlow)"/>
+                <polygon points="0,40 35,-20 -35,-20" fill="none" stroke="currentColor" stroke-width="2.8" filter="url(#arcaneGlow)"/>
+                <polygon points="0,-28 24,14 -24,14" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <polygon points="0,28 24,-14 -24,-14" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <circle cx="0" cy="0" r="13" fill="none" stroke="currentColor" stroke-width="2.8"/>
+                <circle cx="0" cy="0" r="5" fill="currentColor"/>
             `;
     }
 }
@@ -273,7 +358,7 @@ function getModifierGlyphPath(modId) {
     switch (modId) {
         case 'yinla':  return `<line x1="-14" y1="0" x2="14" y2="0" stroke="currentColor" stroke-width="3"/><circle cx="0" cy="0" r="3" fill="currentColor"/>`;
         case 'gilbo':  return `<circle cx="0" cy="0" r="12" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="0" cy="0" r="4" fill="currentColor"/>`;
-       case 'taddum': return `<text x="0" y="5.5" font-size="16" font-family="'Noto Sans JP', 'Segoe UI', 'Microsoft YaHei', sans-serif" font-weight="900" text-anchor="middle" fill="currentColor">刀</text>`;
+        case 'taddum': return `<text x="0" y="5.5" font-size="16" font-family="'Noto Sans JP', 'Segoe UI', 'Microsoft YaHei', sans-serif" font-weight="900" text-anchor="middle" fill="currentColor">刀</text>`;
         case 'yangga': return `<polygon points="0,-15 8,10 0,4 -8,10" fill="currentColor"/>`;
         case 'praba':  return `<rect x="-10" y="-10" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"/>`;
         case 'ngisngi':return `<circle cx="0" cy="0" r="12" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2"/>`;
@@ -310,8 +395,7 @@ function getModifierGlyphPath(modId) {
         case 'sapas':  return `<path d="M-12,-8 L-4,0 L-12,8 M-2,-8 L6,0 L-2,8 M8,-8 L16,0 L8,8" fill="none" stroke="currentColor" stroke-width="2"/>`;
         case 'tunbog': return `<rect x="-10" y="-4" width="20" height="8" fill="currentColor"/><line x1="0" y1="-12" x2="0" y2="12" stroke="currentColor" stroke-width="2"/>`;
         case 'kunta':  return `<polygon points="0,-14 12,0 0,14 -12,0" fill="currentColor"/>`;
-       case 'asanu':  return `
-            <!-- Baybayin 'Sa' Symbol -->
+        case 'asanu':  return `
             <g transform="translate(-18.36, -16) scale(1.08)">
                 <path d="M 8.9846154,4.923077 L 10.769231,23.938462 L 22.461538,7.2615385" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="bevel" stroke-linecap="butt"/>
                 <path d="M 19.261538,12.984615 C 21.098792,13.027957 23.438409,15.022447 23.464852,15.755267 C 23.49016,16.456647 22.088153,17.672444 20.923077,18.523077 C 20.923077,18.523077 24.425573,22.346312 24.579645,24.247574 C 24.736252,26.180107 20.996794,24.856938 19.076923,24.184615 C 19.852188,25.438811 20.927057,26.992876 23.323077,27.076923 C 25.657559,27.16097 27.718245,25.869131 27.753846,24.430769 C 27.789474,22.991285 25.081056,20.240541 23.420355,18.740592 C 23.420355,18.740592 26.923266,17.300554 26.922367,16.060118 C 26.921468,14.851161 23.125785,12.043555 20.738462,10.707692 L 19.261538,12.984615 z" fill="currentColor"/>
@@ -471,20 +555,27 @@ function generateAstrolabeDialTicks(cx, cy, rBase, count, tickLength) {
 
 
 // ==========================================================================
-// 10. MAIN SVG MAGIC SPELL CIRCLE BUILDER
+// 10. MAIN SVG MAGIC SPELL CIRCLE BUILDER WITH BIFURCATED DUAL CORE & OVERDRIVE
 // ==========================================================================
 
 function generateSpellCircleSVG(isInscribing = false) {
-    const elId = state.element || 'sfalhoy';
+    const elId1 = state.element || 'sfalhoy';
+    const elId2 = state.secondaryElement || null;
     const delId = state.delivery || 'uruwak';
     const bodyParts = state.bodyParts || ['whole_body'];
     
-    const activeMods = (state.modifiers || []).map(id => MODIFIERS.find(m => m.id === id)).filter(Boolean);
+    const isDual = !!elId2;
+    const isSameDual = isDual && elId1 === elId2;
+    const isDifferentDual = isDual && elId1 !== elId2;
+
+    const theme1 = ELEMENT_COLORS[elId1] || ELEMENT_COLORS.amin;
+    const theme2 = isDual ? (ELEMENT_COLORS[elId2] || ELEMENT_COLORS.amin) : theme1;
+
+    const activeMods = (state.modifiers || []).map(id => (typeof MODIFIERS !== 'undefined' ? MODIFIERS.find(m => m.id === id) : null)).filter(Boolean);
     const nonDurationMods = activeMods.filter(m => m.cat !== 'duration');
     const activeDurationMod = activeMods.find(m => m.cat === 'duration');
-    const theme = ELEMENT_COLORS[elId] || ELEMENT_COLORS.amin;
 
-    const hb = calculateHeartbeatMetrics(activeMods);
+    const hb = calculateHeartbeatMetrics(activeMods, isSameDual);
 
     const CX = 300;
     const CY = 300;
@@ -493,15 +584,28 @@ function generateSpellCircleSVG(isInscribing = false) {
     const R_BORDER_CHANT = 270;
     const CHANT_CIRCUMFERENCE = 2 * Math.PI * R_BORDER_CHANT;
 
-    // 1. High Mage Inscribed Chant Text
-    const elObj = (typeof ELEMENTS !== 'undefined' ? ELEMENTS.find(e => e.id === elId) : null) || { name: "Sfalhoy", stem: "Shal" };
+    // 1. High Mage Inscribed Chant Text (Supporting Dual Stems)
+    const elObj1 = (typeof ELEMENTS !== 'undefined' ? ELEMENTS.find(e => e.id === elId1) : null) || { name: "Sfalhoy", stem: "Shal" };
+    const elObj2 = (typeof ELEMENTS !== 'undefined' && elId2) ? ELEMENTS.find(e => e.id === elId2) : null;
     const delObj = (typeof DELIVERIES !== 'undefined' ? DELIVERIES.find(d => d.id === delId) : null) || { id: "uruwak", name: "Uruwak", stem: "Uru" };
     
     let mainStem = "";
-    if (delObj.id === 'hlakbil') mainStem = "Hlak-" + elObj.name;
-    else if (delObj.id === 'ruluwar') mainStem = "Rul-" + elObj.name;
-    else if (delObj.id === 'iwati') mainStem = "Iwat-" + elObj.name;
-    else mainStem = elObj.name + " " + delObj.stem;
+    if (isDual && typeof getHybridReaction === 'function') {
+        const hybrid = getHybridReaction(elId1, elId2);
+        if (hybrid) {
+            if (delObj.id === 'hlakbil') mainStem = "Hlak-" + hybrid.stem;
+            else if (delObj.id === 'ruluwar') mainStem = "Rul-" + hybrid.stem;
+            else if (delObj.id === 'iwati') mainStem = "Iwat-" + hybrid.stem;
+            else mainStem = hybrid.stem + " " + delObj.stem;
+        }
+    }
+    
+    if (!mainStem) {
+        if (delObj.id === 'hlakbil') mainStem = "Hlak-" + elObj1.name;
+        else if (delObj.id === 'ruluwar') mainStem = "Rul-" + elObj1.name;
+        else if (delObj.id === 'iwati') mainStem = "Iwat-" + elObj1.name;
+        else mainStem = elObj1.name + " " + delObj.stem;
+    }
 
     const highChantRaw = activeMods.length > 0
         ? `${mainStem}-${activeMods.map(m => m.stem).join("-")}!`
@@ -520,9 +624,10 @@ function generateSpellCircleSVG(isInscribing = false) {
         const x = CX + R_INNER * Math.cos(angleRad);
         const y = CY + R_INNER * Math.sin(angleRad);
         const rune = getDeliveryRunePath(delId, bodyParts);
+        const activeThemeColor = isDifferentDual && (i % 2 === 1) ? theme2.primary : theme1.primary;
         
         deliveryRunesSVG += `
-            <g transform="translate(${x.toFixed(2)}, ${y.toFixed(2)}) rotate(${angleDeg + 90})" color="${theme.primary}">
+            <g transform="translate(${x.toFixed(2)}, ${y.toFixed(2)}) rotate(${angleDeg + 90})" color="${activeThemeColor}">
                 <g class="stage-elem inscribe-delivery-glyph">
                     ${rune}
                 </g>
@@ -532,7 +637,7 @@ function generateSpellCircleSVG(isInscribing = false) {
         innerConduitsSVG += `
             <line x1="${(CX + 64 * Math.cos(angleRad)).toFixed(2)}" y1="${(CY + 64 * Math.sin(angleRad)).toFixed(2)}" 
                   x2="${(CX + (R_INNER - 20) * Math.cos(angleRad)).toFixed(2)}" y2="${(CY + (R_INNER - 20) * Math.sin(angleRad)).toFixed(2)}" 
-                  stroke="${theme.primary}" stroke-width="1.8" stroke-dasharray="3 3" />
+                  stroke="${activeThemeColor}" stroke-width="${isSameDual ? '2.4' : '1.8'}" stroke-dasharray="3 3" />
         `;
     }
 
@@ -547,8 +652,9 @@ function generateSpellCircleSVG(isInscribing = false) {
             const angleRad = (angleDeg * Math.PI) / 180;
             const x = CX + R_OUTER * Math.cos(angleRad);
             const y = CY + R_OUTER * Math.sin(angleRad);
+            const activeColor = isDifferentDual && (i % 2 === 1) ? theme2.primary : theme1.primary;
             ruluwarDenseRingSVG += `
-                <g transform="translate(${x.toFixed(2)}, ${y.toFixed(2)}) rotate(0)" color="${theme.primary}" opacity="0.85">
+                <g transform="translate(${x.toFixed(2)}, ${y.toFixed(2)}) rotate(0)" color="${activeColor}" opacity="0.85">
                     <g class="stage-elem inscribe-ruluwar-glyph">
                         ${getVerticalRuluwarGlyph()}
                     </g>
@@ -572,10 +678,12 @@ function generateSpellCircleSVG(isInscribing = false) {
             polygonPoints.push(`${x.toFixed(2)},${y.toFixed(2)}`);
 
             const glyph = getModifierGlyphPath(mod.id);
+            const activeColor = isDifferentDual && (i % 2 === 1) ? theme2.primary : theme1.primary;
+
             modifierRunesSVG += `
-                <g transform="translate(${x.toFixed(2)}, ${y.toFixed(2)}) rotate(${angleDeg + 90})" color="${theme.primary}">
-                    <circle cx="0" cy="0" r="18" fill="#0c0e15" stroke="${theme.primary}" stroke-width="1.8" filter="url(#arcaneGlow)" class="stage-elem inscribe-node-border"/>
-                    <circle cx="0" cy="0" r="22" fill="none" stroke="${theme.primary}" stroke-width="0.75" stroke-dasharray="2 3" class="stage-elem inscribe-node-orbit"/>
+                <g transform="translate(${x.toFixed(2)}, ${y.toFixed(2)}) rotate(${angleDeg + 90})" color="${activeColor}">
+                    <circle cx="0" cy="0" r="18" fill="#0c0e15" stroke="${activeColor}" stroke-width="1.8" filter="url(#arcaneGlow)" class="stage-elem inscribe-node-border"/>
+                    <circle cx="0" cy="0" r="22" fill="none" stroke="${activeColor}" stroke-width="0.75" stroke-dasharray="2 3" class="stage-elem inscribe-node-orbit"/>
                     <g class="stage-elem inscribe-modifier-glyph">
                         ${glyph}
                     </g>
@@ -585,15 +693,15 @@ function generateSpellCircleSVG(isInscribing = false) {
             outerConduitsSVG += `
                 <line x1="${(CX + 156 * Math.cos(angleRad)).toFixed(2)}" y1="${(CY + 156 * Math.sin(angleRad)).toFixed(2)}"
                       x2="${(CX + (R_OUTER - 24) * Math.cos(angleRad)).toFixed(2)}" y2="${(CY + (R_OUTER - 24) * Math.sin(angleRad)).toFixed(2)}"
-                      stroke="${theme.primary}" stroke-width="2" />
+                      stroke="${activeColor}" stroke-width="2" />
             `;
         });
 
         if (modCount >= 2) {
             const pointsStr = polygonPoints.join(" ");
             constellationPolygon = `
-                <polygon points="${pointsStr}" fill="none" stroke="${theme.primary}" stroke-width="1.2" opacity="0.4"/>
-                <polygon points="${pointsStr}" fill="${theme.glow}" opacity="0.12"/>
+                <polygon points="${pointsStr}" fill="none" stroke="${theme1.primary}" stroke-width="1.2" opacity="0.4"/>
+                <polygon points="${pointsStr}" fill="${theme1.glow}" opacity="0.12"/>
             `;
         }
     } else if (!isRuluwar && !activeDurationMod) {
@@ -602,8 +710,9 @@ function generateSpellCircleSVG(isInscribing = false) {
             const angleRad = (angleDeg * Math.PI) / 180;
             const x = CX + R_OUTER * Math.cos(angleRad);
             const y = CY + R_OUTER * Math.sin(angleRad);
+            const activeColor = isDifferentDual && (i % 2 === 1) ? theme2.primary : theme1.primary;
             modifierRunesSVG += `
-                <g transform="translate(${x.toFixed(2)}, ${y.toFixed(2)})" color="${theme.primary}" opacity="0.3">
+                <g transform="translate(${x.toFixed(2)}, ${y.toFixed(2)})" color="${activeColor}" opacity="0.3">
                     <circle cx="0" cy="0" r="6" fill="none" stroke="currentColor" stroke-width="1.2"/>
                     <line x1="-8" y1="0" x2="8" y2="0" stroke="currentColor" stroke-width="0.8"/>
                     <line x1="0" y1="-8" x2="0" y2="8" stroke="currentColor" stroke-width="0.8"/>
@@ -615,7 +724,120 @@ function generateSpellCircleSVG(isInscribing = false) {
     const scaleMin = (1.0 - hb.scaleDelta).toFixed(3);
     const scaleMax = (1.0 + hb.scaleDelta).toFixed(3);
 
-    // 4. Dynamic Animation Styles
+    // 4. Center Core SVG Generation: Yin-Yang (Dual Different), Overcharge (Same Dual), or Single
+    let centerCoreSVG = "";
+
+    if (isDifferentDual) {
+        // =========================================================
+        // CASE A: BISECTED YIN-YANG ROTATING DUAL CORE (PERFECT HARMONIC ALIGNMENT)
+        // =========================================================
+        centerCoreSVG = `
+            <g class="center-core-group heartbeat-element">
+                <!-- Dual Ambient Chamber Border Ring -->
+                <circle cx="${CX}" cy="${CY}" r="74" fill="none" stroke="url(#dualThemeGradient)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.7"/>
+                <circle cx="${CX}" cy="${CY}" r="64" fill="#0b0d13" stroke="url(#dualThemeGradient)" stroke-width="2.5" filter="url(#arcaneGlow)"/>
+
+                <!-- Static Center Anchor -->
+                <g transform="translate(${CX}, ${CY})">
+                    <!-- Spinning Yin-Yang Lobe Matrix -->
+                    <g class="yinyang-core-rotation">
+                        <!-- Top Lobe Fill (Element 1) -->
+                        <path d="M 0,-54 A 54,54 0 0,1 0,54 A 27,27 0 0,0 0,0 A 27,27 0 0,1 0,-54 Z"
+                              fill="${theme1.bg}" stroke="none" opacity="0.95"/>
+
+                        <!-- Bottom Lobe Fill (Element 2) -->
+                        <path d="M 0,54 A 54,54 0 0,1 0,-54 A 27,27 0 0,0 0,0 A 27,27 0 0,1 0,54 Z"
+                              fill="${theme2.bg}" stroke="none" opacity="0.95"/>
+
+                        <!-- Top Outer Rim (Element 1 Color) -->
+                        <path d="M 0,-54 A 54,54 0 0,1 0,54" 
+                              fill="none" stroke="${theme1.primary}" stroke-width="2.2" filter="url(#arcaneGlow)"/>
+                        
+                        <!-- Bottom Outer Rim (Element 2 Color) -->
+                        <path d="M 0,54 A 54,54 0 0,1 0,-54" 
+                              fill="none" stroke="${theme2.primary}" stroke-width="2.2" filter="url(#arcaneGlow)"/>
+
+                        <!-- Top S-Arc (Enclosing Element 1 Head - Element 1 Color) -->
+                        <path d="M 0,-54 A 27,27 0 0,0 0,0" 
+                              fill="none" stroke="${theme1.primary}" stroke-width="2.4" filter="url(#arcaneGlow)"/>
+                        
+                        <!-- Bottom S-Arc (Enclosing Element 2 Head - Element 2 Color) -->
+                        <path d="M 0,0 A 27,27 0 0,1 0,54" 
+                              fill="none" stroke="${theme2.primary}" stroke-width="2.4" filter="url(#arcaneGlow)"/>
+
+                        <!-- Central Neutral Junction Point -->
+                        <circle cx="0" cy="0" r="2" fill="#ffffff" opacity="0.9" filter="url(#arcaneGlow)"/>
+
+                        <!-- Element 1 Node (Top Lobe - Element 1 Color) -->
+                        <g transform="translate(0, -27)">
+                            <circle cx="0" cy="0" r="14" fill="#0b0d13" stroke="${theme1.primary}" stroke-width="1.4" opacity="0.95"/>
+                            <g transform="scale(0.30)" color="${theme1.primary}">
+                                <g class="stage-elem inscribe-core-rune" filter="url(#arcaneGlow)">
+                                    ${getElementalRunePath(elId1)}
+                                </g>
+                            </g>
+                        </g>
+
+                        <!-- Element 2 Node (Bottom Lobe - Element 2 Color) -->
+                        <g transform="translate(0, 27)">
+                            <circle cx="0" cy="0" r="14" fill="#0b0d13" stroke="${theme2.primary}" stroke-width="1.4" opacity="0.95"/>
+                            <g transform="scale(0.30)" color="${theme2.primary}">
+                                <g class="stage-elem inscribe-core-rune" filter="url(#arcaneGlow)">
+                                    ${getElementalRunePath(elId2)}
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        `;
+    } else if (isSameDual) {
+        // =========================================================
+        // CASE B: UPGRADED HARMONIC RESONANCE OVERCHARGED CORE
+        // =========================================================
+        centerCoreSVG = `
+            <g class="center-core-group heartbeat-element" color="${theme1.primary}">
+                <!-- Overdrive Radiant Corona Rings & Staccato Rays -->
+                <circle cx="${CX}" cy="${CY}" r="88" fill="none" stroke="${theme1.primary}" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.6"/>
+                <circle cx="${CX}" cy="${CY}" r="78" fill="none" stroke="${theme1.primary}" stroke-width="1.6" stroke-dasharray="6 3" opacity="0.85" filter="url(#arcaneGlow)"/>
+                
+                <polygon points="${CX},${CY-84} ${CX+72},${CY+42} ${CX-72},${CY+42}" fill="none" stroke="${theme1.primary}" stroke-width="1.2" opacity="0.5"/>
+                <polygon points="${CX},${CY+84} ${CX+72},${CY-42} ${CX-72},${CY-42}" fill="none" stroke="${theme1.primary}" stroke-width="1.2" opacity="0.5"/>
+                
+                <circle cx="${CX}" cy="${CY}" r="64" fill="#0b0d13" stroke="${theme1.primary}" stroke-width="3" filter="url(#arcaneGlow)"/>
+                <circle cx="${CX}" cy="${CY}" r="54" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-dasharray="4 2" opacity="0.9"/>
+                
+                <!-- Upgraded Overdrive Rune Glyph -->
+                <g transform="translate(${CX}, ${CY})">
+                    <g class="stage-elem inscribe-core-rune" filter="url(#arcaneGlow)">
+                        ${getOverchargedRunePath(elId1)}
+                    </g>
+                </g>
+            </g>
+        `;
+    } else {
+        // =========================================================
+        // CASE C: STANDARD SINGLE-ELEMENT CORE
+        // =========================================================
+        centerCoreSVG = `
+            <g class="center-core-group heartbeat-element" color="${theme1.primary}">
+                <g class="stage-elem inscribe-core-rings">
+                    <circle cx="${CX}" cy="${CY}" r="74" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 4" opacity="0.6"/>
+                    <polygon points="${CX},${CY-72} ${CX+62},${CY+36} ${CX-62},${CY+36}" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.4"/>
+                    <polygon points="${CX},${CY+72} ${CX+62},${CY-36} ${CX-62},${CY-36}" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.4"/>
+                    <circle cx="${CX}" cy="${CY}" r="64" fill="#0b0d13" stroke="currentColor" stroke-width="2.2" filter="url(#arcaneGlow)"/>
+                    <circle cx="${CX}" cy="${CY}" r="54" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.75"/>
+                </g>
+                <g transform="translate(${CX}, ${CY})">
+                    <g class="stage-elem inscribe-core-rune" filter="url(#arcaneGlow)">
+                        ${getElementalRunePath(elId1)}
+                    </g>
+                </g>
+            </g>
+        `;
+    }
+
+    // 5. Dynamic Animation Styles
     let animationStyles = `
         @keyframes dynamicHeartbeat {
             0%, 100% { transform: scale(${scaleMin}); opacity: ${hb.opacityMin.toFixed(2)}; }
@@ -632,6 +854,10 @@ function generateSpellCircleSVG(isInscribing = false) {
         @keyframes rotateInnerDeliveryClockwise {
             from { transform: rotate(0deg); }
             to   { transform: rotate(360deg); }
+        }
+        @keyframes rotateYinYangCore {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(-360deg); }
         }
 
         .heartbeat-element {
@@ -650,16 +876,18 @@ function generateSpellCircleSVG(isInscribing = false) {
             transform-origin: ${CX}px ${CY}px;
             animation: rotateInnerDeliveryClockwise 50s linear infinite;
         }
+        .yinyang-core-rotation {
+            transform-origin: 0px 0px;
+            animation: rotateYinYangCore 35s linear infinite;
+        }
     `;
 
     if (isInscribing) {
         animationStyles = `
-            /* Initial Hidden State */
             #arcaneSpellCircleSVG.is-inscribing .stage-elem {
                 opacity: 0;
             }
 
-            /* Universal Stroke Tracing Animations */
             @keyframes traceCircFast {
                 0%   { stroke-dashoffset: 1800; opacity: 0; }
                 10%  { opacity: 1; }
@@ -694,7 +922,6 @@ function generateSpellCircleSVG(isInscribing = false) {
                 100% { opacity: 0.92; letter-spacing: 1.5px; }
             }
 
-            /* Synchronized Rotation & Heartbeat starting right as Inscription finishes (3.9s) */
             @keyframes rotateBorderChantClockwise {
                 from { transform: rotate(0deg); }
                 to   { transform: rotate(360deg); }
@@ -710,6 +937,10 @@ function generateSpellCircleSVG(isInscribing = false) {
             @keyframes dynamicHeartbeat {
                 0%, 100% { transform: scale(${scaleMin}); opacity: ${hb.opacityMin.toFixed(2)}; }
                 50%      { transform: scale(${scaleMax}); opacity: ${hb.opacityMax.toFixed(2)}; }
+            }
+            @keyframes rotateYinYangCore {
+                from { transform: rotate(0deg); }
+                to   { transform: rotate(-360deg); }
             }
 
             #arcaneSpellCircleSVG.is-inscribing .heartbeat-element {
@@ -728,8 +959,12 @@ function generateSpellCircleSVG(isInscribing = false) {
                 transform-origin: ${CX}px ${CY}px;
                 animation: rotateInnerDeliveryClockwise 50s linear 3.9s infinite;
             }
+            #arcaneSpellCircleSVG.is-inscribing .yinyang-core-rotation {
+                transform-origin: 0px 0px;
+                animation: rotateYinYangCore 35s linear 3.9s infinite;
+            }
 
-            /* STAGE 1: Central Core Genesis (0.15s - 1.0s) */
+            /* STAGE 1: Central Core Genesis */
             #arcaneSpellCircleSVG.is-inscribing .inscribe-bg-glow {
                 animation: fadeInGlowBg 1.4s ease-out 0.15s forwards;
             }
@@ -742,14 +977,14 @@ function generateSpellCircleSVG(isInscribing = false) {
                 animation: igniteRuneInPlace 0.7s ease-out 0.4s forwards;
             }
 
-            /* STAGE 1 -> 2: Inner Conduits (0.9s - 1.4s) */
+            /* STAGE 1 -> 2: Inner Conduits */
             #arcaneSpellCircleSVG.is-inscribing .inscribe-conduit-1 line {
                 stroke-dasharray: 200;
                 stroke-dashoffset: 200;
                 animation: traceConduitRay 0.5s ease-out 0.9s forwards;
             }
 
-            /* STAGE 2: Delivery Ring & Somatic Runes (1.3s - 2.2s) */
+            /* STAGE 2: Delivery Ring & Somatic Runes */
             #arcaneSpellCircleSVG.is-inscribing .inscribe-delivery-rings {
                 stroke-dasharray: 1200;
                 stroke-dashoffset: 1200;
@@ -759,7 +994,7 @@ function generateSpellCircleSVG(isInscribing = false) {
                 animation: igniteRuneInPlace 0.8s ease-out 1.5s forwards;
             }
 
-            /* STAGE 2 -> 3: Outer Conduits & Lattice (1.9s - 2.6s) */
+            /* STAGE 2 -> 3: Outer Conduits & Lattice */
             #arcaneSpellCircleSVG.is-inscribing .inscribe-conduit-2 line {
                 stroke-dasharray: 200;
                 stroke-dashoffset: 200;
@@ -769,7 +1004,7 @@ function generateSpellCircleSVG(isInscribing = false) {
                 animation: fadeInLatticeGrid 1.0s ease 2.0s forwards;
             }
 
-            /* STAGE 3: Modifier Ring, Node Mini-Rings & Glyphs (2.2s - 3.3s) */
+            /* STAGE 3: Modifier Ring & Glyphs */
             #arcaneSpellCircleSVG.is-inscribing .inscribe-modifier-ring {
                 stroke-dasharray: 1800;
                 stroke-dashoffset: 1800;
@@ -790,7 +1025,7 @@ function generateSpellCircleSVG(isInscribing = false) {
                 animation: igniteRuneInPlace 0.7s ease-out 2.3s forwards;
             }
 
-            /* STAGE 4: Outermost Border Frame & Runic Chant (3.0s - 3.9s) */
+            /* STAGE 4: Outermost Border Frame & Runic Chant */
             #arcaneSpellCircleSVG.is-inscribing .inscribe-border-rings {
                 stroke-dasharray: 2000;
                 stroke-dashoffset: 2000;
@@ -802,7 +1037,42 @@ function generateSpellCircleSVG(isInscribing = false) {
         `;
     }
 
-    // 5. Compose Master SVG
+    // 6. Define Gradients (Dual-Tone Chromatic Split vs Overcharge vs Single)
+    let gradientDefs = "";
+    if (isDifferentDual) {
+        gradientDefs = `
+            <linearGradient id="dualThemeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="${theme1.primary}"/>
+                <stop offset="50%" stop-color="#ffffff" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="${theme2.primary}"/>
+            </linearGradient>
+            <radialGradient id="centerGradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="${theme1.primary}" stop-opacity="${(0.35 * hb.glow).toFixed(2)}"/>
+                <stop offset="45%" stop-color="${theme2.primary}" stop-opacity="${(0.25 * hb.glow).toFixed(2)}"/>
+                <stop offset="80%" stop-color="${theme1.bg}" stop-opacity="${(0.15 * hb.glow).toFixed(2)}"/>
+                <stop offset="100%" stop-color="#0b0d13" stop-opacity="0"/>
+            </radialGradient>
+        `;
+    } else if (isSameDual) {
+        gradientDefs = `
+            <radialGradient id="centerGradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="${(0.55 * hb.glow).toFixed(2)}"/>
+                <stop offset="35%" stop-color="${theme1.primary}" stop-opacity="${(0.45 * hb.glow).toFixed(2)}"/>
+                <stop offset="70%" stop-color="${theme1.bg}" stop-opacity="${(0.28 * hb.glow).toFixed(2)}"/>
+                <stop offset="100%" stop-color="#0b0d13" stop-opacity="0"/>
+            </radialGradient>
+        `;
+    } else {
+        gradientDefs = `
+            <radialGradient id="centerGradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="${theme1.primary}" stop-opacity="${(0.38 * hb.glow).toFixed(2)}"/>
+                <stop offset="60%" stop-color="${theme1.bg}" stop-opacity="${(0.20 * hb.glow).toFixed(2)}"/>
+                <stop offset="100%" stop-color="#0b0d13" stop-opacity="0"/>
+            </radialGradient>
+        `;
+    }
+
+    // 7. Compose Master SVG
     return `
     <svg id="arcaneSpellCircleSVG" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" class="spell-circle-svg ${isInscribing ? 'is-inscribing' : ''}" style="width: 100%; height: 100%; max-width: 520px; aspect-ratio: 1/1; cursor: pointer;" onclick="triggerInscriptionAnimation()">
         <defs>
@@ -813,11 +1083,7 @@ function generateSpellCircleSVG(isInscribing = false) {
                     <feMergeNode in="SourceGraphic" />
                 </feMerge>
             </filter>
-            <radialGradient id="centerGradient" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="${theme.primary}" stop-opacity="${(0.38 * hb.glow).toFixed(2)}"/>
-                <stop offset="60%" stop-color="${theme.bg}" stop-opacity="${(0.20 * hb.glow).toFixed(2)}"/>
-                <stop offset="100%" stop-color="#0b0d13" stop-opacity="0"/>
-            </radialGradient>
+            ${gradientDefs}
             <path id="outerBorderRunicTrack" d="M ${CX}, ${CY - R_BORDER_CHANT} a ${R_BORDER_CHANT},${R_BORDER_CHANT} 0 1,1 -0.01,0 Z" fill="none" />
             <style>
                 ${animationStyles}
@@ -828,7 +1094,7 @@ function generateSpellCircleSVG(isInscribing = false) {
         <circle cx="${CX}" cy="${CY}" r="282" fill="url(#centerGradient)" class="heartbeat-element stage-elem inscribe-bg-glow"/>
 
         <!-- ================= STATIC SACRED GEOMETRY LATTICE ================= -->
-        <g color="${theme.primary}" class="stage-elem inscribe-lattice">
+        <g color="${theme1.primary}" class="stage-elem inscribe-lattice">
             <line x1="16" y1="${CY}" x2="584" y2="${CY}" stroke="currentColor" stroke-width="0.6" stroke-dasharray="8 6" opacity="0.35"/>
             <line x1="${CX}" y1="16" x2="${CX}" y2="584" stroke="currentColor" stroke-width="0.6" stroke-dasharray="8 6" opacity="0.35"/>
             <line x1="102" y1="102" x2="498" y2="498" stroke="currentColor" stroke-width="0.5" stroke-dasharray="4 6" opacity="0.25"/>
@@ -842,13 +1108,13 @@ function generateSpellCircleSVG(isInscribing = false) {
         </g>
 
         <!-- ================= CONNECTIVE CONDUIT LINES ================= -->
-        <g color="${theme.primary}">
+        <g color="${theme1.primary}">
             <g class="stage-elem inscribe-conduit-1">${innerConduitsSVG}</g>
             <g class="stage-elem inscribe-conduit-2">${outerConduitsSVG}</g>
         </g>
 
         <!-- ================= OUTER MODIFIER RING (STAGE 3) ================= -->
-        <g class="outer-ring-group" color="${theme.primary}">
+        <g class="outer-ring-group" color="${theme1.primary}">
             <g class="stage-elem inscribe-modifier-ring">
                 ${getDurationRingGeometry(activeDurationMod ? activeDurationMod.id : null, CX, CY, R_OUTER)}
             </g>
@@ -860,13 +1126,13 @@ function generateSpellCircleSVG(isInscribing = false) {
         </g>
 
         <!-- ================= REAL OUTER BORDER CHANT RING (STAGE 4) ================= -->
-        <g class="outer-border-chant-group" color="${theme.primary}">
+        <g class="outer-border-chant-group" color="${theme1.primary}">
             <g class="stage-elem inscribe-border-rings">
-                <circle cx="${CX}" cy="${CY}" r="282" fill="none" stroke="currentColor" stroke-width="1.8" opacity="0.85" filter="url(#arcaneGlow)"/>
+                <circle cx="${CX}" cy="${CY}" r="282" fill="none" stroke="${isDifferentDual ? 'url(#dualThemeGradient)' : 'currentColor'}" stroke-width="${isSameDual ? '2.4' : '1.8'}" opacity="0.88" filter="url(#arcaneGlow)"/>
                 <circle cx="${CX}" cy="${CY}" r="258" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.7"/>
             </g>
             <g class="stage-elem inscribe-border-chant">
-                <text font-family="'Segoe UI Historic', 'Noto Sans Runic', 'Apple Symbols', 'Segoe UI Symbol', 'Courier New', monospace" font-size="9.5" font-weight="700" letter-spacing="1.5" fill="${theme.primary}" opacity="0.92" filter="url(#arcaneGlow)">
+                <text font-family="'Segoe UI Historic', 'Noto Sans Runic', 'Apple Symbols', 'Segoe UI Symbol', 'Courier New', monospace" font-size="9.5" font-weight="700" letter-spacing="1.5" fill="${isDifferentDual ? 'url(#dualThemeGradient)' : theme1.primary}" opacity="0.92" filter="url(#arcaneGlow)">
                     <textPath href="#outerBorderRunicTrack" startOffset="0%" textLength="${(CHANT_CIRCUMFERENCE - 6).toFixed(1)}" lengthAdjust="spacing">
                         ${fullRunicBorderText}
                     </textPath>
@@ -875,11 +1141,11 @@ function generateSpellCircleSVG(isInscribing = false) {
         </g>
 
         <!-- ================= FIRST RING: DELIVERY ARCHETYPE (STAGE 2) ================= -->
-        <g class="inner-delivery-group" color="${theme.primary}">
+        <g class="inner-delivery-group" color="${theme1.primary}">
             <g class="stage-elem inscribe-delivery-rings">
                 <circle cx="${CX}" cy="${CY}" r="156" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.75"/>
                 <circle cx="${CX}" cy="${CY}" r="150" fill="none" stroke="currentColor" stroke-width="0.75" stroke-dasharray="4 4" opacity="0.5"/>
-                <circle cx="${CX}" cy="${CY}" r="${R_INNER}" fill="none" stroke="currentColor" stroke-width="2" opacity="0.9" filter="url(#arcaneGlow)"/>
+                <circle cx="${CX}" cy="${CY}" r="${R_INNER}" fill="none" stroke="${isDifferentDual ? 'url(#dualThemeGradient)' : 'currentColor'}" stroke-width="2" opacity="0.9" filter="url(#arcaneGlow)"/>
                 <circle cx="${CX}" cy="${CY}" r="108" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.65"/>
                 <circle cx="${CX}" cy="${CY}" r="102" fill="none" stroke="currentColor" stroke-width="0.75" opacity="0.45"/>
             </g>
@@ -887,31 +1153,16 @@ function generateSpellCircleSVG(isInscribing = false) {
         </g>
 
         <!-- ================= CENTER ELEMENTAL CHAMBER (STAGE 1) ================= -->
-        <g class="center-core-group heartbeat-element" color="${theme.primary}">
-            <g class="stage-elem inscribe-core-rings">
-                <circle cx="${CX}" cy="${CY}" r="74" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 4" opacity="0.6"/>
-                <polygon points="${CX},${CY-72} ${CX+62},${CY+36} ${CX-62},${CY+36}" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.4"/>
-                <polygon points="${CX},${CY+72} ${CX+62},${CY-36} ${CX-62},${CY-36}" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.4"/>
-                <circle cx="${CX}" cy="${CY}" r="64" fill="#0b0d13" stroke="currentColor" stroke-width="2.2" filter="url(#arcaneGlow)"/>
-                <circle cx="${CX}" cy="${CY}" r="54" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.75"/>
-            </g>
-            <g transform="translate(${CX}, ${CY})">
-                <g class="stage-elem inscribe-core-rune" filter="url(#arcaneGlow)">
-                    ${getElementalRunePath(elId)}
-                </g>
-            </g>
-        </g>
+        ${centerCoreSVG}
     </svg>
     `;
 }
 
 // 11. TRIGGER CONNECTED INSCRIPTION ANIMATION ON CLICK
-// 11. TRIGGER CONNECTED INSCRIPTION ANIMATION ON CLICK
 function triggerInscriptionAnimation() {
     if (circleState.isInscribing) return;
     circleState.isInscribing = true;
 
-    // Trigger Procedural Web Audio Synthesis
     if (typeof playInscriptionAudio === "function") {
         playInscriptionAudio();
     }
@@ -919,7 +1170,6 @@ function triggerInscriptionAnimation() {
     const container = document.getElementById("spellCircleContainer");
     if (!container) return;
 
-    // Render in pure connected drawing state
     container.innerHTML = generateSpellCircleSVG(true);
 
     setTimeout(() => {
@@ -928,111 +1178,36 @@ function triggerInscriptionAnimation() {
 }
 
 // 12. CLIENT-SIDE ANIMATED GIF EXPORT ENGINE
-async function exportSpellCircleGIF() {
-    const statusBtn = document.getElementById("exportGifBtn");
-    const origText = statusBtn ? statusBtn.innerHTML : "Save as GIF";
-    
-    try {
-        if (statusBtn) {
-            statusBtn.disabled = true;
-            statusBtn.innerHTML = "⏳ Inscribing Frames...";
-        }
+// Auto-Loader Bridge: Safely loads exporter.js if not yet loaded in DOM
+if (typeof window.exportSpellCircleGIF === "undefined") {
+    window.exportSpellCircleGIF = function() {
+        const btn = document.getElementById("exportGifBtn");
+        if (btn) btn.innerHTML = "⏳ Loading Exporter...";
 
-        if (typeof gifshot === "undefined") {
-            await new Promise((resolve, reject) => {
-                const script = document.createElement("script");
-                script.src = "https://cdnjs.cloudflare.com/ajax/libs/gifshot/0.3.2/gifshot.min.js";
-                script.onload = resolve;
-                script.onerror = () => reject(new Error("Could not load GIF encoder library"));
-                document.head.appendChild(script);
-            });
-        }
+        const loadScript = (src, onSuccess, onError) => {
+            const s = document.createElement("script");
+            s.src = src;
+            s.onload = onSuccess;
+            s.onerror = onError;
+            document.head.appendChild(s);
+        };
 
-        const spellTitle = (document.getElementById("spellTitle")?.innerText || "Spell").replace(/[^a-zA-Z0-9_-]/g, "_");
-        const canvas = document.createElement("canvas");
-        const size = 480;
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext("2d");
-
-        const numFrames = 24;
-        const frameImages = [];
-        const durationSeconds = 3.2;
-
-        for (let i = 0; i < numFrames; i++) {
-            const progress = i / numFrames;
-            const rotInner = (progress * 360).toFixed(2);
-            const rotOuter = (-progress * 360).toFixed(2);
-            const rotBorder = (progress * 360).toFixed(2);
-            const pulseScale = (1.0 + 0.05 * Math.sin(progress * 2 * Math.PI)).toFixed(3);
-
-            let svgString = generateSpellCircleSVG(false);
-
-            svgString = svgString.replace(
-                'class="outer-border-chant-group"',
-                `class="outer-border-chant-group" transform="rotate(${rotBorder}, 300, 300)"`
-            ).replace(
-                'class="outer-ring-group"',
-                `class="outer-ring-group" transform="rotate(${rotOuter}, 300, 300)"`
-            ).replace(
-                'class="inner-delivery-group"',
-                `class="inner-delivery-group" transform="rotate(${rotInner}, 300, 300)"`
-            ).replace(
-                'class="center-core-group heartbeat-element"',
-                `class="center-core-group" transform="scale(${pulseScale})" style="transform-origin: 300px 300px;"`
-            );
-
-            const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
-            const url = URL.createObjectURL(svgBlob);
-
-            const img = new Image();
-            await new Promise((res, rej) => {
-                img.onload = res;
-                img.onerror = rej;
-                img.src = url;
-            });
-
-            ctx.fillStyle = "#090b10";
-            ctx.fillRect(0, 0, size, size);
-            ctx.drawImage(img, 0, 0, size, size);
-            URL.revokeObjectURL(url);
-
-            frameImages.push(canvas.toDataURL("image/png"));
-            if (statusBtn) statusBtn.innerHTML = `⏳ Inscribing (${Math.round((i / numFrames) * 100)}%)...`;
-        }
-
-        if (statusBtn) statusBtn.innerHTML = "✨ Binding Arcane GIF...";
-
-        gifshot.createGIF({
-            images: frameImages,
-            gifWidth: size,
-            gifHeight: size,
-            interval: durationSeconds / numFrames,
-            numFrames: numFrames,
-            sampleInterval: 8
-        }, function(obj) {
-            if (!obj.error) {
-                const link = document.createElement("a");
-                link.download = `${spellTitle}_Circle.gif`;
-                link.href = obj.image;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+        loadScript("js/exporter.js", () => {
+            if (typeof window.exportSpellCircleGIF === "function") {
+                window.exportSpellCircleGIF();
             }
-            if (statusBtn) {
-                statusBtn.disabled = false;
-                statusBtn.innerHTML = origText;
-            }
+        }, () => {
+            // Fallback if exporter.js is in root directory instead of js/
+            loadScript("exporter.js", () => {
+                if (typeof window.exportSpellCircleGIF === "function") {
+                    window.exportSpellCircleGIF();
+                }
+            }, () => {
+                alert("Could not find exporter.js. Please ensure 'exporter.js' is placed in your 'js/' folder.");
+                if (btn) btn.innerHTML = "Save as GIF";
+            });
         });
-
-    } catch (err) {
-        console.error("GIF export failed", err);
-        alert("Could not export animated GIF. Please ensure an active internet connection on first export.");
-        if (statusBtn) {
-            statusBtn.disabled = false;
-            statusBtn.innerHTML = origText;
-        }
-    }
+    };
 }
 
 // 13. AUTO-RENDER FUNCTION TO INJECT INTO DOM

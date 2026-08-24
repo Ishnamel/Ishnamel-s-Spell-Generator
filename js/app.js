@@ -2,6 +2,8 @@
 
 let state = {
     element: "sfalhoy",
+    secondaryElement: null, // Secondary hybrid root (optional)
+    isDualCast: false,      // UI toggle state
     delivery: "uruwak",
     bodyParts: ["whole_body"], // Default somatic vessel
     modifiers: [],
@@ -13,6 +15,7 @@ let state = {
 function init() {
     loadCustomSpellsFromStorage();
     renderElements();
+    renderSecondaryElements();
     renderDeliveries();
     renderBodyPartSelector();
     renderCategoryTabs();
@@ -23,12 +26,72 @@ function init() {
 
 function renderElements() {
     const container = document.getElementById("elementContainer");
+    if (!container) return;
     container.innerHTML = ELEMENTS.map(e => `
         <div class="opt-card ${state.element === e.id ? 'active' : ''}" onclick="setElement('${e.id}')">
             <span class="title">${e.name}</span>
             <span class="sub">${e.label}</span>
         </div>
     `).join("");
+}
+
+function renderSecondaryElements() {
+    const container = document.getElementById("secondaryElementContainer");
+    if (!container) return;
+    container.innerHTML = ELEMENTS.map(e => {
+        const isSelected = state.secondaryElement === e.id;
+        const isSameAsPrimary = state.element === e.id;
+        return `
+            <div class="opt-card ${isSelected ? 'active dual-active' : ''} ${isSameAsPrimary ? 'resonance-card' : ''}" 
+                 onclick="setSecondaryElement('${e.id}')"
+                 title="${isSameAsPrimary ? 'Harmonic Resonance (' + e.label + ' Overdrive)' : e.label}">
+                <span class="title">${e.name}</span>
+                <span class="sub">${isSameAsPrimary ? '✦ ' + e.label + ' Overdrive' : e.label}</span>
+            </div>
+        `;
+    }).join("");
+}
+
+
+function toggleDualCastUI() {
+    state.isDualCast = !state.isDualCast;
+    const section = document.getElementById("secondaryElementSection");
+    const btn = document.getElementById("dualCastToggleBtn");
+
+    if (state.isDualCast) {
+        section.style.display = "block";
+        if (btn) {
+            btn.classList.add("active");
+            btn.innerHTML = `<span>✖</span> Single Cast`;
+        }
+    } else {
+        section.style.display = "none";
+        state.secondaryElement = null;
+        if (btn) {
+            btn.classList.remove("active");
+            btn.innerHTML = `<span>➕</span> Dual Cast`;
+        }
+    }
+    renderSecondaryElements();
+    compileSpell();
+}
+
+function setSecondaryElement(id) {
+    if (state.secondaryElement === id) {
+        state.secondaryElement = null; // Toggle off if clicked again
+    } else {
+        state.secondaryElement = id;
+    }
+    renderSecondaryElements();
+    compileSpell();
+}
+
+
+function setElement(id) {
+    state.element = id;
+    renderElements();
+    renderSecondaryElements();
+    compileSpell();
 }
 
 function renderDeliveries() {
@@ -72,10 +135,8 @@ function renderBodyPartSelector() {
 
 function toggleBodyPart(id) {
     if (id === "whole_body") {
-        // Selecting whole body clears individual parts
         state.bodyParts = ["whole_body"];
     } else {
-        // Remove whole_body if selecting specific body parts
         state.bodyParts = state.bodyParts.filter(p => p !== "whole_body");
         
         if (state.bodyParts.includes(id)) {
@@ -84,7 +145,6 @@ function toggleBodyPart(id) {
             state.bodyParts.push(id);
         }
         
-        // If everything is deselected, fallback to whole body
         if (state.bodyParts.length === 0) {
             state.bodyParts = ["whole_body"];
         }
@@ -128,12 +188,6 @@ function updatePipeline() {
             `;
         }).join("");
     }
-    compileSpell();
-}
-
-function setElement(id) {
-    state.element = id;
-    renderElements();
     compileSpell();
 }
 
