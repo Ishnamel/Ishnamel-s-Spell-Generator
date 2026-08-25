@@ -1,11 +1,13 @@
 /* ==========================================================================
-   TONE.JS PROCEDURAL ARCANE BGM & MULTI-VOICE MODIFIER SYNTHESIZER
+   TONE.JS PROCEDURAL ARCANE BGM & MULTI-VOICE MAGIC ARRAY SYNTHESIZER
+   Synchronized Multi-Stage Manifestation Symphony & Tri-Elemental Living Drone
    ========================================================================== */
 
 class ArcaneAudioEngine {
     constructor() {
         this.isInitialized = false;
         this.isPlaying = false;
+        this.currentMode = "single"; // "single" | "array"
         this.currentElement = "sfalhoy";
         this.currentDelivery = "uruwak";
         this.currentModifiers = [];
@@ -16,10 +18,11 @@ class ArcaneAudioEngine {
         this.reverb = null;
         this.chorus = null;
 
-        // Continuous Living Elemental Drone Oscillators (No Decay Envelopes)
+        // Continuous Living Elemental Drone Oscillators
         this.droneFilter = null;
         this.droneOscA = null;
         this.droneOscB = null;
+        this.droneOscC = null; // 3rd Oscillator for Tri-Elemental Array Chords
         this.droneLFO = null;
         this.noiseFilter = null;
         this.noiseGenerator = null;
@@ -33,46 +36,54 @@ class ArcaneAudioEngine {
         this.glitchSynth = null;      // Ring-Modulated Anti-Magic, Spell-Breakers
         this.polyChordSynth = null;   // Dense Multi-Voice Chords & Domain Stabs
 
-        // Vocal Formant Choir Engine (Dedicated for Erlaaw / Light Manifestation)
-        this.choirFilter1 = null;     // Formant F1 (Vocal Aperture)
-        this.choirFilter2 = null;     // Formant F2 (Vocal Position)
+        // Vocal Formant Choir Engine (For Erlaaw / Celestial Light)
+        this.choirFilter1 = null;
+        this.choirFilter2 = null;
         this.choirSynth = null;
 
         this.bgmLoop = null;
 
-        // 1. Dynamic Elemental Drones (Exact Numeric Frequencies & LFO Breathing Rates)
+        // 1. Dynamic Elemental Drones (Exact Numeric Frequencies & Chords)
         this.elementDrones = {
             sfalhoy: { 
-                freqA: 55.0,  freqB: 82.41, typeA: "sawtooth", typeB: "triangle",
-                filterFreq: 260, Q: 3.5, lfoRate: 3.2, lfoDepth: 160, noiseFreq: 650, noiseVol: -20 
+                freqA: 55.0,  freqB: 82.41, freqC: 110.0, typeA: "sawtooth", typeB: "triangle",
+                filterFreq: 260, Q: 3.5, lfoRate: 3.2, lfoDepth: 160, noiseFreq: 650, noiseVol: -20,
+                chord: ["A2", "C#3", "E3", "A3"]
             },
             hanhum:  { 
-                freqA: 43.65, freqB: 65.41, typeA: "sine",     typeB: "triangle",
-                filterFreq: 220, Q: 2.0, lfoRate: 0.18, lfoDepth: 110, noiseFreq: 280, noiseVol: -24 
+                freqA: 43.65, freqB: 65.41, freqC: 87.31, typeA: "sine",     typeB: "triangle",
+                filterFreq: 220, Q: 2.0, lfoRate: 0.18, lfoDepth: 110, noiseFreq: 280, noiseVol: -24,
+                chord: ["F2", "Ab2", "C3", "Eb3"]
             },
             falga:   { 
-                freqA: 32.7,  freqB: 49.0,  typeA: "triangle", typeB: "sawtooth",
-                filterFreq: 130, Q: 5.5, lfoRate: 0.08, lfoDepth: 55,  noiseFreq: 150, noiseVol: -28 
+                freqA: 32.7,  freqB: 49.0,  freqC: 65.41, typeA: "triangle", typeB: "sawtooth",
+                filterFreq: 130, Q: 5.5, lfoRate: 0.08, lfoDepth: 55,  noiseFreq: 150, noiseVol: -28,
+                chord: ["C2", "Eb2", "G2", "C3"]
             },
             jalfinn: { 
-                freqA: 82.41, freqB: 123.47, typeA: "sine",    typeB: "sine",
-                filterFreq: 420, Q: 2.5, lfoRate: 2.4, lfoDepth: 220, noiseFreq: 1100, noiseVol: -18 
+                freqA: 82.41, freqB: 123.47, freqC: 164.81, typeA: "sine",    typeB: "sine",
+                filterFreq: 420, Q: 2.5, lfoRate: 2.4, lfoDepth: 220, noiseFreq: 1100, noiseVol: -18,
+                chord: ["E3", "G#3", "B3", "E4"]
             },
             iklad:   { 
-                freqA: 36.71, freqB: 65.41, typeA: "square",   typeB: "sawtooth",
-                filterFreq: 300, Q: 4.0, lfoRate: 8.0, lfoDepth: 180, noiseFreq: 750, noiseVol: -22 
+                freqA: 36.71, freqB: 65.41, freqC: 146.83, typeA: "square",   typeB: "sawtooth",
+                filterFreq: 300, Q: 4.0, lfoRate: 8.0, lfoDepth: 180, noiseFreq: 750, noiseVol: -22,
+                chord: ["D2", "A2", "D3", "F#3"]
             },
             erlaaw:  { 
-                freqA: 49.0,  freqB: 123.47, typeA: "triangle", typeB: "sine",
-                filterFreq: 420, Q: 2.0, lfoRate: 1.6, lfoDepth: 260, noiseFreq: 380, noiseVol: -28 
+                freqA: 49.0,  freqB: 123.47, freqC: 196.0, typeA: "triangle", typeB: "sine",
+                filterFreq: 420, Q: 2.0, lfoRate: 1.6, lfoDepth: 260, noiseFreq: 380, noiseVol: -28,
+                chord: ["G2", "B2", "D3", "G3"]
             },
             worulim: { 
-                freqA: 36.71, freqB: 51.91, typeA: "sawtooth", typeB: "square",
-                filterFreq: 180, Q: 5.5, lfoRate: 0.35, lfoDepth: 90, noiseFreq: 220, noiseVol: -24 
+                freqA: 36.71, freqB: 51.91, freqC: 73.42, typeA: "sawtooth", typeB: "square",
+                filterFreq: 180, Q: 5.5, lfoRate: 0.35, lfoDepth: 90, noiseFreq: 220, noiseVol: -24,
+                chord: ["D2", "Ab2", "C3", "D3"]
             },
             amin:    { 
-                freqA: 73.42, freqB: 110.0, typeA: "sine",     typeB: "triangle",
-                filterFreq: 360, Q: 3.0, lfoRate: 0.5, lfoDepth: 180, noiseFreq: 400, noiseVol: -22 
+                freqA: 73.42, freqB: 110.0, freqC: 146.83, typeA: "sine",     typeB: "triangle",
+                filterFreq: 360, Q: 3.0, lfoRate: 0.5, lfoDepth: 180, noiseFreq: 400, noiseVol: -22,
+                chord: ["D3", "F#3", "A3", "C#4"]
             }
         };
 
@@ -87,7 +98,7 @@ class ArcaneAudioEngine {
     }
 
     // -------------------------------------------------------------
-    // 1. ASYNC INITIALIZATION & MASTER AUDIO CHAIN (+50% LOUDNESS)
+    // 1. ASYNC INITIALIZATION & MASTER AUDIO CHAIN
     // -------------------------------------------------------------
     async init() {
         if (this.isInitialized) return;
@@ -110,35 +121,30 @@ class ArcaneAudioEngine {
 
         await Tone.start();
 
-        // 1. Master Output: Limiter + 50% Volume Boost (+4.5dB)
+        // Master Output Chain: Limiter + Volume Gain Staging
         this.limiter = new Tone.Limiter(-0.5).toDestination();
         this.masterVolume = new Tone.Volume(+4.5).connect(this.limiter);
 
-        // 2. Global Spatial Reverb & Stereo Chorus
-        this.reverb = new Tone.Reverb({ decay: 4.2, preDelay: 0.12, wet: 0.38 }).connect(this.masterVolume);
+        // Global Spatial Reverb & Stereo Chorus
+        this.reverb = new Tone.Reverb({ decay: 4.5, preDelay: 0.12, wet: 0.42 }).connect(this.masterVolume);
         await this.reverb.generate();
 
         this.chorus = new Tone.Chorus(2.5, 3.5, 0.5).connect(this.reverb).start();
 
-        // Voice A: Continuous Pure Oscillators for Living Elemental Drone (No Decay)
+        // Continuous Tri-Harmonic Oscillators
         this.droneFilter = new Tone.Filter({ frequency: 240, type: "lowpass", rolloff: -24 }).connect(this.reverb);
         this.droneLFO = new Tone.LFO(0.5, 100, 320).connect(this.droneFilter.frequency).start();
 
-        this.droneOscA = new Tone.FatOscillator({
-            frequency: 55.0,
-            type: "sawtooth",
-            spread: 15,
-            count: 3
-        }).connect(this.droneFilter);
+        this.droneOscA = new Tone.FatOscillator({ frequency: 55.0, type: "sawtooth", spread: 15, count: 3 }).connect(this.droneFilter);
         this.droneOscA.volume.value = -3.5;
 
-        this.droneOscB = new Tone.Oscillator({
-            frequency: 82.41,
-            type: "triangle"
-        }).connect(this.droneFilter);
+        this.droneOscB = new Tone.Oscillator({ frequency: 82.41, type: "triangle" }).connect(this.droneFilter);
         this.droneOscB.volume.value = -4.5;
 
-        // Voice B: Sub-Bass / Heavy Impact Kick (Bamtuk, Tupwok, Pittip, Rundo)
+        this.droneOscC = new Tone.Oscillator({ frequency: 110.0, type: "sine" }).connect(this.droneFilter);
+        this.droneOscC.volume.value = -6.0;
+
+        // Sub-Bass / Membrane Impact
         this.subImpactSynth = new Tone.MembraneSynth({
             pitchDecay: 0.08,
             octaves: 3.5,
@@ -147,7 +153,7 @@ class ArcaneAudioEngine {
         }).connect(this.masterVolume);
         this.subImpactSynth.volume.value = +3.0;
 
-        // Voice C: Metallic Anvil / Razor Blade Clang (Dukto, Iwa, Tigkab, Kunta, Asanu, Bati)
+        // Metallic Anvil & Scythe Blade Clangs
         this.metallicSynth = new Tone.MetalSynth({
             frequency: 220,
             envelope: { attack: 0.001, decay: 0.35, release: 0.2 },
@@ -158,7 +164,7 @@ class ArcaneAudioEngine {
         }).connect(this.reverb);
         this.metallicSynth.volume.value = -7.0;
 
-        // Voice D: Crystalline FM Lead (Shapes, Beams, Multiplication, Arcs)
+        // Crystalline FM Lead (Beams, Arpeggios, Lasers)
         this.fmLeadSynth = new Tone.FMSynth({
             harmonicity: 1.5,
             modulationIndex: 2.5,
@@ -169,7 +175,7 @@ class ArcaneAudioEngine {
         }).connect(this.chorus);
         this.fmLeadSynth.volume.value = +0.5;
 
-        // Voice E: Aeromantic Noise Whoosh / Slash / Barrier (Apap, Praba, Abbay, Yudgo, Ewansi)
+        // Aeromantic Noise Whoosh / Streamer Synthesizer
         this.noiseFilter = new Tone.Filter(240, "lowpass").connect(this.reverb);
         this.noiseGenerator = new Tone.Noise("pink").connect(this.noiseFilter);
         this.noiseGenerator.volume.value = -22.0;
@@ -180,7 +186,7 @@ class ArcaneAudioEngine {
         }).connect(this.reverb);
         this.noiseSlashSynth.volume.value = -8.0;
 
-        // Voice F: Chrono-Staccato Pluck (Tat, Tan, Lit, Talkib, Litu)
+        // Chrono-Staccato Pluck
         this.chronoPluckSynth = new Tone.PluckSynth({
             attackNoise: 1.2,
             dampening: 3500,
@@ -188,7 +194,7 @@ class ArcaneAudioEngine {
         }).connect(this.reverb);
         this.chronoPluckSynth.volume.value = -1.5;
 
-        // Voice G: Anti-Magic Ring-Modulation Glitch (Ami, Giba, Tigam, Aduy, Morpa)
+        // Anti-Magic Ring-Modulation Glitch
         this.glitchSynth = new Tone.AMSynth({
             harmonicity: 2.75,
             oscillator: { type: "square" },
@@ -197,14 +203,14 @@ class ArcaneAudioEngine {
         }).connect(this.reverb);
         this.glitchSynth.volume.value = -4.5;
 
-        // Voice H: Polyphonic Chord Stabs (Abbay, Bunton, Multi-Voice Matrices)
+        // Polyphonic Synthesis Chords & Domain Stabs
         this.polyChordSynth = new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: "triangle" },
             envelope: { attack: 0.04, decay: 0.35, sustain: 0.35, release: 0.7 }
         }).connect(this.reverb);
         this.polyChordSynth.volume.value = -3.0;
 
-        // Voice I: Calibrated Vocal Formant Choir Synth (For Erlaaw / Celestial Light)
+        // Vocal Formant Choir
         this.choirFilter1 = new Tone.Filter(320, "bandpass", -12);
         this.choirFilter2 = new Tone.Filter(850, "bandpass", -12);
         this.choirFilter1.Q.value = 4.0;
@@ -225,33 +231,27 @@ class ArcaneAudioEngine {
     }
 
     // -------------------------------------------------------------
-    // 2. START / STOP NONSTOP ARCANE BGM
+    // 2. START / STOP ARCANE BGM (SUPPORTS ARRAY & SINGLE CIRCLE)
     // -------------------------------------------------------------
-    startBGM(state) {
+    startBGM(stateOrArrayState) {
         if (!this.isInitialized) return;
         if (this.isPlaying) return;
 
-        this.updateParameters(state);
+        this.updateParameters(stateOrArrayState);
 
         let step = 0;
         const self = this;
 
-        // Start Pure Drone Oscillators (Continuous & Non-Decaying)
-        const elData = this.elementDrones[this.currentElement] || this.elementDrones.amin;
-        this.droneOscA.frequency.value = elData.freqA;
-        this.droneOscB.frequency.value = elData.freqB;
-        this.droneOscA.type = elData.typeA;
-        this.droneOscB.type = elData.typeB;
-        
         this.droneOscA.start();
         this.droneOscB.start();
+        if (this.droneOscC) this.droneOscC.start();
         this.noiseGenerator.start();
 
         // Main Transport Rhythmic Loop
         this.bgmLoop = new Tone.Loop(time => {
             const groove = self.deliveryGrooves[self.currentDelivery] || self.deliveryGrooves.uruwak;
             
-            // 1. Trigger Delivery Rhythm
+            // 1. Delivery Rhythm
             if (self.currentDelivery === 'hlakbil') {
                 self.subImpactSynth.triggerAttackRelease("A0", "16n", time);
                 self.subImpactSynth.triggerAttackRelease("F0", "16n", time + 0.22);
@@ -263,7 +263,7 @@ class ArcaneAudioEngine {
                 self.subImpactSynth.triggerAttackRelease(pitch, "8n", time);
             }
 
-            // 2. Trigger Active Modifier Audio Signature on the Beat (Instantly Stops when Empty)
+            // 2. Interleaved Multi-Node Modifier Signature
             if (self.currentModifiers && self.currentModifiers.length > 0) {
                 const modId = self.currentModifiers[step % self.currentModifiers.length];
                 self.playModifierAcousticSignature(modId, time);
@@ -285,53 +285,88 @@ class ArcaneAudioEngine {
         }
         if (this.droneOscA) this.droneOscA.stop();
         if (this.droneOscB) this.droneOscB.stop();
+        if (this.droneOscC) this.droneOscC.stop();
         if (this.noiseGenerator) this.noiseGenerator.stop();
         Tone.Transport.stop();
         this.isPlaying = false;
     }
 
     // -------------------------------------------------------------
-    // 3. INSTANT REAL-TIME BGM PARAMETER SWITCHING (NO TOGGLE NEEDED)
+    // 3. PARAMETER SYNCHRONIZER (DYNAMIC ARRAY CHORDS & SINGLE CIRCLE)
     // -------------------------------------------------------------
-    updateParameters(state) {
-        if (!state) return;
-        this.currentElement = state.element || "sfalhoy";
-        this.currentDelivery = state.delivery || "uruwak";
-        // Defensive copy of modifiers array so "Clear Chain" takes effect immediately
-        this.currentModifiers = state.modifiers && state.modifiers.length > 0 ? [...state.modifiers] : [];
+    updateParameters(stateOrArrayState) {
+        if (!stateOrArrayState) return;
 
-        if (!this.isInitialized || !this.isPlaying) return;
+        const isArray = (typeof arrayState !== "undefined" && arrayState.mode === "array") || !!stateOrArrayState.nodes;
 
-        const elData = this.elementDrones[this.currentElement] || this.elementDrones.amin;
+        if (isArray) {
+            const arr = stateOrArrayState.nodes ? stateOrArrayState : (typeof arrayState !== "undefined" ? arrayState : null);
+            if (!arr || !arr.nodes) return;
 
-        // 1. Instant Frequency Ramp (Guaranteed Smooth Numeric Ramp)
-        this.droneOscA.frequency.rampTo(elData.freqA, 0.15);
-        this.droneOscB.frequency.rampTo(elData.freqB, 0.15);
-        this.droneOscA.type = elData.typeA;
-        this.droneOscB.type = elData.typeB;
+            const nA = arr.nodes.alpha;
+            const nB = arr.nodes.beta;
+            const nG = arr.nodes.gamma;
 
-        this.droneFilter.frequency.rampTo(elData.filterFreq, 0.2);
-        this.droneFilter.Q.value = elData.Q;
+            this.currentMode = "array";
+            this.currentElement = nA.element || "sfalhoy";
+            this.currentDelivery = nA.delivery || "uruwak";
 
-        if (this.droneLFO) {
-            this.droneLFO.frequency.rampTo(elData.lfoRate, 0.25);
-            this.droneLFO.min = Math.max(35, elData.filterFreq - elData.lfoDepth);
-            this.droneLFO.max = elData.filterFreq + elData.lfoDepth;
+            let combinedMods = [];
+            const maxLen = Math.max(nA.modifiers.length, nB.modifiers.length, nG.modifiers.length);
+            for (let i = 0; i < maxLen; i++) {
+                if (nA.modifiers[i]) combinedMods.push(nA.modifiers[i]);
+                if (nB.modifiers[i]) combinedMods.push(nB.modifiers[i]);
+                if (nG.modifiers[i]) combinedMods.push(nG.modifiers[i]);
+            }
+            this.currentModifiers = combinedMods;
+
+            if (!this.isInitialized || !this.isPlaying) return;
+
+            // Tri-Harmonic Drone Chords (Alpha + Beta + Gamma)
+            const dA = this.elementDrones[nA.element] || this.elementDrones.sfalhoy;
+            const dB = this.elementDrones[nB.element] || this.elementDrones.iklad;
+            const dG = this.elementDrones[nG.element] || this.elementDrones.falga;
+
+            this.droneOscA.frequency.rampTo(dA.freqA, 0.2);
+            this.droneOscB.frequency.rampTo(dB.freqB, 0.2);
+            if (this.droneOscC) this.droneOscC.frequency.rampTo(dG.freqC, 0.2);
+
+            const blendedFilterFreq = (dA.filterFreq + dB.filterFreq + dG.filterFreq) / 3;
+            this.droneFilter.frequency.rampTo(blendedFilterFreq, 0.25);
+
+            const groove = this.deliveryGrooves[nA.delivery] || this.deliveryGrooves.uruwak;
+            let targetBPM = groove.bpm;
+            if (this.currentModifiers.includes('sapas')) targetBPM *= 1.35;
+            if (this.currentModifiers.includes('tunbog')) targetBPM *= 0.65;
+
+            Tone.Transport.bpm.rampTo(targetBPM, 0.25);
+
+        } else {
+            this.currentMode = "single";
+            this.currentElement = stateOrArrayState.element || "sfalhoy";
+            this.currentDelivery = stateOrArrayState.delivery || "uruwak";
+            this.currentModifiers = stateOrArrayState.modifiers && stateOrArrayState.modifiers.length > 0 ? [...stateOrArrayState.modifiers] : [];
+
+            if (!this.isInitialized || !this.isPlaying) return;
+
+            const elData = this.elementDrones[this.currentElement] || this.elementDrones.amin;
+
+            this.droneOscA.frequency.rampTo(elData.freqA, 0.15);
+            this.droneOscB.frequency.rampTo(elData.freqB, 0.15);
+            if (this.droneOscC) this.droneOscC.frequency.rampTo(elData.freqC || elData.freqA * 2, 0.15);
+
+            this.droneFilter.frequency.rampTo(elData.filterFreq, 0.2);
+            this.droneFilter.Q.value = elData.Q;
+
+            const groove = this.deliveryGrooves[this.currentDelivery] || this.deliveryGrooves.uruwak;
+            let targetBPM = groove.bpm;
+            if (this.currentModifiers.includes('sapas')) targetBPM *= 1.35;
+            if (this.currentModifiers.includes('tunbog')) targetBPM *= 0.65;
+
+            Tone.Transport.bpm.rampTo(targetBPM, 0.25);
+            this.noiseFilter.frequency.rampTo(elData.noiseFreq, 0.25);
+            this.noiseGenerator.volume.rampTo(elData.noiseVol, 0.25);
         }
-
-        // 2. Instant Delivery BPM & Groove update
-        const groove = this.deliveryGrooves[this.currentDelivery] || this.deliveryGrooves.uruwak;
-        let targetBPM = groove.bpm;
-
-        if (this.currentModifiers.includes('sapas')) targetBPM *= 1.35; // Fast Hypersonic
-        if (this.currentModifiers.includes('tunbog')) targetBPM *= 0.65; // Slow Plodding
-
-        Tone.Transport.bpm.rampTo(targetBPM, 0.25);
-        Tone.Transport.swing = groove.swing;
-
-        // 3. Instant Ambient Noise Update
-        this.noiseFilter.frequency.rampTo(elData.noiseFreq, 0.25);
-        this.noiseGenerator.volume.rampTo(elData.noiseVol, 0.25);
     }
 
     // -------------------------------------------------------------
@@ -339,7 +374,6 @@ class ArcaneAudioEngine {
     // -------------------------------------------------------------
     playModifierAcousticSignature(modId, time) {
         switch (modId) {
-            // --- 1. SHAPE MODIFIERS ---
             case 'yinla':
                 this.fmLeadSynth.triggerAttackRelease("C3", "16n", time);
                 this.fmLeadSynth.frequency.exponentialRampToValueAtTime(523.25, time + 0.1);
@@ -366,8 +400,6 @@ class ArcaneAudioEngine {
             case 'abbay':
                 this.polyChordSynth.triggerAttackRelease(["C2", "G2", "Eb3", "Bb3"], "4n", time);
                 break;
-
-            // --- 2. MOVEMENT MODIFIERS ---
             case 'rundo':
                 this.subImpactSynth.triggerAttackRelease("G0", "8n", time);
                 break;
@@ -397,8 +429,6 @@ class ArcaneAudioEngine {
                 this.fmLeadSynth.triggerAttackRelease("A3", "16n", time);
                 this.fmLeadSynth.frequency.exponentialRampToValueAtTime(65.4, time + 0.3);
                 break;
-
-            // --- 3. IMPACT MODIFIERS ---
             case 'bamtuk':
                 this.subImpactSynth.triggerAttackRelease("C0", "2n", time);
                 break;
@@ -419,18 +449,14 @@ class ArcaneAudioEngine {
                 this.chronoPluckSynth.triggerAttackRelease("C3", time);
                 this.chronoPluckSynth.triggerAttackRelease("E3", time + 0.04);
                 this.chronoPluckSynth.triggerAttackRelease("G3", time + 0.08);
-                this.chronoPluckSynth.triggerAttackRelease("B3", time + 0.12);
                 break;
             case 'tublag':
                 this.fmLeadSynth.triggerAttackRelease("A2", "32n", time);
                 this.fmLeadSynth.triggerAttackRelease("D3", "32n", time + 0.06);
-                this.fmLeadSynth.triggerAttackRelease("G3", "32n", time + 0.12);
                 break;
             case 'tigkab':
                 this.metallicSynth.triggerAttackRelease("C4", "64n", time);
                 break;
-
-            // --- 4. DURATION MODIFIERS ---
             case 'tat':
                 this.chronoPluckSynth.triggerAttackRelease("C4", time);
                 break;
@@ -446,7 +472,6 @@ class ArcaneAudioEngine {
             case 'lit':
                 this.chronoPluckSynth.triggerAttackRelease("A2", time);
                 this.chronoPluckSynth.triggerAttackRelease("A2", time + 0.06);
-                this.chronoPluckSynth.triggerAttackRelease("A2", time + 0.12);
                 break;
             case 'talkib':
                 this.chronoPluckSynth.triggerAttackRelease("D3", time);
@@ -454,8 +479,6 @@ class ArcaneAudioEngine {
             case 'litu':
                 this.fmLeadSynth.triggerAttackRelease("G1", "4n", time);
                 break;
-
-            // --- 5. MULTIPLY MODIFIERS ---
             case 'tiha':
                 this.fmLeadSynth.triggerAttackRelease("D2", "16n", time);
                 this.fmLeadSynth.triggerAttackRelease("D3", "16n", time + 0.08);
@@ -474,8 +497,6 @@ class ArcaneAudioEngine {
             case 'bunton':
                 this.polyChordSynth.triggerAttackRelease(["A1", "C2", "E2", "A2"], "16n", time);
                 break;
-
-            // --- 6. TARGET MODIFIERS ---
             case 'ami':
                 this.glitchSynth.triggerAttackRelease("F2", "16n", time);
                 break;
@@ -500,8 +521,6 @@ class ArcaneAudioEngine {
             case 'shak':
                 this.subImpactSynth.triggerAttackRelease("A0", "8n", time);
                 break;
-
-            // --- 7. CONTROL MODIFIERS ---
             case 'suruti':
                 this.chronoPluckSynth.triggerAttackRelease("D3", time);
                 this.chronoPluckSynth.triggerAttackRelease("G3", time + 0.06);
@@ -521,8 +540,6 @@ class ArcaneAudioEngine {
             case 'morpa':
                 this.glitchSynth.triggerAttackRelease("A1", "8n", time);
                 break;
-
-            // --- 8. INTENSITY MODIFIERS ---
             case 'piag':
                 this.subImpactSynth.triggerAttackRelease("C0", "4n", time);
                 break;
@@ -541,7 +558,6 @@ class ArcaneAudioEngine {
             case 'asanu':
                 this.metallicSynth.triggerAttackRelease("A4", "64n", time);
                 break;
-
             default:
                 this.fmLeadSynth.triggerAttackRelease("C2", "16n", time);
                 break;
@@ -549,13 +565,194 @@ class ArcaneAudioEngine {
     }
 
     // -------------------------------------------------------------
-    // 5. BALANCED, AUDIBLE ELEMENTAL MANIFESTATION BURST PROFILES
+    // 5. EXACT SYNCHRONIZED 5.2s MAGIC ARRAY MANIFESTATION SYMPHONY
     // -------------------------------------------------------------
-  // -------------------------------------------------------------
-    // 5. EXACT 3-SECOND ELEMENTAL MANIFESTATION PROFILES
+    playArrayManifestationBurst(arrState) {
+        if (!this.isInitialized) return;
+        const now = Tone.now();
+
+        const nA = arrState.nodes ? arrState.nodes.alpha : { element: "sfalhoy", modifiers: [] };
+        const nB = arrState.nodes ? arrState.nodes.beta : { element: "iklad", modifiers: [] };
+        const nG = arrState.nodes ? arrState.nodes.gamma : { element: "falga", modifiers: [] };
+
+        const elA = nA.element || "sfalhoy";
+        const elB = nB.element || "iklad";
+        const elG = nG.element || "falga";
+
+        const chordA = this.elementDrones[elA]?.chord || ["A2", "C3", "E3"];
+        const chordB = this.elementDrones[elB]?.chord || ["D2", "F#2", "A2"];
+        const chordG = this.elementDrones[elG]?.chord || ["C2", "G2", "C3"];
+
+        // =========================================================================
+        // STAGE 0 (0.0s - 0.9s): Center Singularity & 3-Sided Yin-Yang Genesis
+        // =========================================================================
+        // Sub-bass implosion kick
+        this.subImpactSynth.triggerAttackRelease("C0", "2n", now);
+
+        // Suction whoosh
+        this.noiseFilter.type = "lowpass";
+        this.noiseFilter.frequency.setValueAtTime(900, now);
+        this.noiseFilter.frequency.exponentialRampToValueAtTime(140, now + 0.4);
+        this.noiseSlashSynth.triggerAttackRelease("4n", now);
+
+        // Tri-chord astral ignition bloom (0.3s)
+        this.polyChordSynth.triggerAttackRelease([chordA[0], chordB[1], chordG[2]], "1n", now + 0.3, 0.85);
+
+        // 3 Micro-Chimes for the 3 Combo Yin-Yang Eyes (0.35s, 0.45s, 0.55s)
+        ["C4", "F#4", "A4"].forEach((pitch, i) => {
+            this.chronoPluckSynth.triggerAttackRelease(pitch, now + 0.35 + i * 0.1);
+            this.glitchSynth.triggerAttackRelease(pitch, "64n", now + 0.35 + i * 0.1, 0.6);
+        });
+
+        // =========================================================================
+        // STAGE 1 (0.85s - 1.4s): Triangle Rails & Supersonic Particle Streamers
+        // =========================================================================
+        this.noiseFilter.frequency.setValueAtTime(320, now + 0.85);
+        this.noiseFilter.frequency.exponentialRampToValueAtTime(3600, now + 1.4);
+        this.noiseSlashSynth.triggerAttackRelease("4n", now + 0.9);
+
+        // Supersonic laser streak arpeggio along the triangle rails
+        ["C3", "G3", "C4", "G4"].forEach((p, idx) => {
+            this.fmLeadSynth.triggerAttackRelease(p, "32n", now + 0.95 + idx * 0.08, 0.75);
+        });
+
+        // =========================================================================
+        // STAGE 2 (1.45s - 2.8s): Inner Sub-Circles Inscription (Alpha -> Beta -> Gamma)
+        // =========================================================================
+        // 2a. Node Alpha (1.45s): Genesis Core Draws & Element Alpha Motif Ignites
+        this.playSingleElementalMotif(elA, now + 1.45, 0, "16n");
+
+        // 2b. Node Beta (1.85s): Modulation Core Draws, Fission Ribbon & Element Beta Motif
+        this.playSingleElementalMotif(elB, now + 1.85, 1, "16n");
+
+        // 2c. Node Gamma (2.25s): Apex Core Draws, Element Gamma Motif & Physical Hull Morph
+        this.playSingleElementalMotif(elG, now + 2.25, -1, "8n");
+        const latestModG = (nG.modifiers && nG.modifiers.length > 0) ? nG.modifiers[nG.modifiers.length - 1] : null;
+        if (latestModG) {
+            this.playHullMorphSignature(latestModG, now + 2.35);
+        }
+
+        // =========================================================================
+        // STAGE 3 (2.85s - 3.3s): Mid-Ring Ruluwar Infinity Crown (36-Rune Wave)
+        // =========================================================================
+        // Rhythmic 6-pip infinity clockwork cascade
+        ["D3", "F#3", "A3", "D4", "F#4", "A4"].forEach((p, i) => {
+            this.chronoPluckSynth.triggerAttackRelease(p, now + 2.85 + i * 0.06);
+        });
+
+        // =========================================================================
+        // STAGE 4 (3.40s - 4.2s): Dual Grand Celtic Triquetras & Merkabah Laser Bridges
+        // =========================================================================
+        // Crystalline laser bridge arpeggio connecting to outer orbit
+        const merkabahLaserArp = ["D3", "A3", "D4", "F#4", "A4", "D5"];
+        merkabahLaserArp.forEach((p, idx) => {
+            this.fmLeadSynth.triggerAttackRelease(p, "32n", now + 3.4 + idx * 0.10, 0.85);
+            if (idx % 2 === 0) {
+                this.chronoPluckSynth.triggerAttackRelease(p, now + 3.4 + idx * 0.10);
+            }
+        });
+
+        // Blade scythe whoosh
+        this.noiseSlashSynth.triggerAttackRelease("4n", now + 3.6);
+
+        // =========================================================================
+        // STAGE 5 (4.25s - 5.2s): Grand 38px Outer Chant Sweep & Synthesis Resolution
+        // =========================================================================
+        // Atmospheric perimeter sweep
+        this.noiseFilter.frequency.setValueAtTime(600, now + 4.25);
+        this.noiseFilter.frequency.exponentialRampToValueAtTime(4800, now + 4.8);
+        this.noiseSlashSynth.triggerAttackRelease("2n", now + 4.3);
+
+        // Cathedral Bell Strike & Deep Sub-Bass Resolution
+        this.metallicSynth.triggerAttackRelease("C1", "1n", now + 4.6, 1.0);
+        this.subImpactSynth.triggerAttackRelease("C0", "1n", now + 4.6, 1.0);
+
+        // Full Tri-Elemental Grand Synthesis Chord (Fusing all 3 active elements)
+        this.polyChordSynth.triggerAttackRelease([
+            chordA[0], chordA[1],
+            chordB[1], chordB[2],
+            chordG[0], chordG[2]
+        ], "2n", now + 4.6, 0.95);
+    }
+
+    // Helper: Distinct, rich 3-note elemental motif
+    playSingleElementalMotif(elId, time, octaveShift = 0, length = "16n") {
+        switch (elId) {
+            case "sfalhoy": // Fire: Ascending flame arpeggio
+                ["A2", "E3", "C4"].forEach((n, i) => {
+                    this.fmLeadSynth.triggerAttackRelease(n, length, time + i * 0.08);
+                });
+                break;
+            case "hanhum": // Water: Liquid drop cascade
+                ["F2", "C3", "Ab3"].forEach((n, i) => {
+                    this.fmLeadSynth.triggerAttackRelease(n, length, time + i * 0.08);
+                });
+                break;
+            case "falga": // Earth: Heavy resonant basalt chime
+                ["C2", "G2", "Eb3"].forEach((n, i) => {
+                    this.metallicSynth.triggerAttackRelease(n, length, time + i * 0.09);
+                });
+                break;
+            case "jalfinn": // Wind: High whistling flute
+                ["E3", "B3", "G#4"].forEach((n, i) => {
+                    this.chronoPluckSynth.triggerAttackRelease(n, time + i * 0.07);
+                });
+                break;
+            case "iklad": // Lightning: Electric snap & crackle
+                ["D2", "A2", "D4"].forEach((n, i) => {
+                    this.glitchSynth.triggerAttackRelease(n, "64n", time + i * 0.05);
+                });
+                break;
+            case "erlaaw": // Light: Cathedral chime
+                this.metallicSynth.triggerAttackRelease("G2", "2n", time);
+                this.fmLeadSynth.triggerAttackRelease("D4", length, time + 0.05);
+                break;
+            case "worulim": // Void: Sub-bass descending muffle
+                ["D3", "Ab2", "D2"].forEach((n, i) => {
+                    this.glitchSynth.triggerAttackRelease(n, length, time + i * 0.08);
+                });
+                break;
+            case "amin": // Pure Aether: Fractal crystal glitch
+            default:
+                ["D4", "F#4", "C#5", "A5"].forEach((n, i) => {
+                    this.chronoPluckSynth.triggerAttackRelease(n, time + i * 0.05);
+                });
+                break;
+        }
+    }
+
+    // Helper: Physical Hull Morph Audio Signature (Triggers when Node Gamma morphs)
+    playHullMorphSignature(modId, time) {
+        switch (modId) {
+            case "taddum": // Sawblade: Rapid metallic blade whir
+                this.metallicSynth.triggerAttackRelease("F#3", "32n", time);
+                this.metallicSynth.triggerAttackRelease("C4", "64n", time + 0.06);
+                break;
+            case "praba": // Octagonal Plate: Heavy anvil clamp
+            case "kunta":
+                this.metallicSynth.triggerAttackRelease("D2", "4n", time, 0.9);
+                break;
+            case "yinla": // Focus Fins: High-frequency beam ping
+            case "yangga":
+                this.fmLeadSynth.triggerAttackRelease("C4", "32n", time);
+                this.chronoPluckSynth.triggerAttackRelease("G4", time);
+                break;
+            case "ngisngi": // Spinning Halos: Dual FM chord
+                this.fmLeadSynth.triggerAttackRelease("D3", "32n", time);
+                this.fmLeadSynth.triggerAttackRelease("A3", "32n", time + 0.08);
+                break;
+            case "piag": // Solar Overcharge: Electrical surge
+                this.subImpactSynth.triggerAttackRelease("C0", "8n", time);
+                this.glitchSynth.triggerAttackRelease("G2", "16n", time);
+                break;
+            default:
+                this.chronoPluckSynth.triggerAttackRelease("C3", time);
+                break;
+        }
+    }
+
     // -------------------------------------------------------------
-// -------------------------------------------------------------
-    // 5. BALANCED, IMMEDIATE 5+ NOTE ELEMENTAL MANIFESTATION BURSTS
+    // 6. SINGLE CIRCLE ELEMENTAL MANIFESTATION BURST
     // -------------------------------------------------------------
     playManifestationBurst(state) {
         if (!this.isInitialized) return;
@@ -563,216 +760,151 @@ class ArcaneAudioEngine {
         const elId = state.element || "sfalhoy";
 
         switch (elId) {
-            // =========================================================
-            // 1. FIRE (SFALHOY): SUCTION WHOOSH -> FWOOM -> CRACKLING EMBERS
-            // =========================================================
             case 'sfalhoy': {
-                // Air sucked inward whoosh (starts immediately at now)
                 this.noiseFilter.frequency.setValueAtTime(900, now);
                 this.noiseFilter.frequency.exponentialRampToValueAtTime(150, now + 0.4);
                 this.noiseSlashSynth.triggerAttackRelease("4n", now);
 
-                // Sudden roaring FWOOM at 0.45s
                 this.noiseFilter.frequency.exponentialRampToValueAtTime(2600, now + 0.9);
                 this.subImpactSynth.triggerAttackRelease("C1", "4n", now + 0.45);
 
-                // 6-Note Melodic Blaze Arpeggio (A2 -> C3 -> E3 -> G3 -> A3 -> C4)
-                const fireMelody = ["A2", "C3", "E3", "G3", "A3", "C4"];
-                fireMelody.forEach((n, idx) => {
+                ["A2", "C3", "E3", "G3", "A3", "C4"].forEach((n, idx) => {
                     this.fmLeadSynth.triggerAttackRelease(n, "16n", now + 0.5 + idx * 0.18);
                 });
-
-                // Crackling ember-like flare plucks at the end
                 ["E4", "G4", "C5"].forEach((n, idx) => {
                     this.chronoPluckSynth.triggerAttackRelease(n, now + 1.8 + idx * 0.22);
                 });
                 break;
             }
-
-            // =========================================================
-            // 2. WATER (HANHUM): GLASSY WUMMM -> RUSHING SWELL -> CRYSTAL DROPLETS
-            // =========================================================
-           // =========================================================
-            // 2. WATER (HANHUM): AUDIBLE RUSHING WATER & FLUID CASCADE
-            // =========================================================
             case 'hanhum': {
-                // Loud rushing water surge (400Hz -> 2400Hz sweep)
                 this.noiseFilter.type = "bandpass";
                 this.noiseFilter.Q.value = 2.2;
                 this.noiseFilter.frequency.setValueAtTime(400, now);
                 this.noiseFilter.frequency.exponentialRampToValueAtTime(2400, now + 1.2);
-                this.noiseFilter.frequency.exponentialRampToValueAtTime(600, now + 3.0);
-                this.noiseSlashSynth.volume.setValueAtTime(-1.0, now);
                 this.noiseSlashSynth.triggerAttackRelease("1n", now);
 
-                // 6-Note Flowing Liquid Waterfall Cascade
-                const waterNotes = ["F2", "Ab2", "C3", "Eb3", "F3", "Ab3"];
-                waterNotes.forEach((n, idx) => {
+                ["F2", "Ab2", "C3", "Eb3", "F3", "Ab3"].forEach((n, idx) => {
                     this.fmLeadSynth.triggerAttackRelease(n, "8n", now + 0.15 + idx * 0.22);
                 });
-
-                // Fluid chord swell + deep hydraulic breaker thud
                 this.polyChordSynth.triggerAttackRelease(["F2", "C3", "Eb3", "Ab3"], "2n", now + 1.8);
                 this.subImpactSynth.triggerAttackRelease("F1", "2n", now + 2.4);
                 break;
             }
-            // =========================================================
-            // 3. EARTH (FALGA): STONE GROAN -> SUBTERRANEAN RUMBLE -> DEEP DOOM
-            // =========================================================
             case 'falga': {
-                // Low stone groan & subterranean rumble immediately
                 this.droneFilter.frequency.setValueAtTime(90, now);
                 this.droneFilter.frequency.linearRampToValueAtTime(250, now + 1.4);
                 this.subImpactSynth.triggerAttackRelease("C1", "2n", now);
 
-                // 6-Note Heavy Resonant Basalt Chime Melody
-                const stoneMelody = ["C2", "Eb2", "G2", "Bb2", "C3", "Eb3"];
-                stoneMelody.forEach((n, idx) => {
+                ["C2", "Eb2", "G2", "Bb2", "C3", "Eb3"].forEach((n, idx) => {
                     this.metallicSynth.triggerAttackRelease(n, "8n", now + 0.3 + idx * 0.25);
                 });
-
-                // Final Heavy Resonant DOOM at the end
                 this.subImpactSynth.triggerAttackRelease("C0", "1n", now + 2.2);
                 this.metallicSynth.triggerAttackRelease("C1", "2n", now + 2.2);
                 break;
             }
-
-            // =========================================================
-            // 4. AIR (JALFINN): WHISTLING HARMONIC -> SPIRALING WIND -> SUDDEN BREATH
-            // =========================================================
             case 'jalfinn': {
-                // High flute-like whistling harmonic tone immediately
                 this.chronoPluckSynth.triggerAttackRelease("E4", now);
                 this.fmLeadSynth.triggerAttackRelease("B4", "4n", now + 0.1);
 
-                // Spiraling wind gain & filter sweep
                 this.noiseFilter.frequency.setValueAtTime(600, now + 0.2);
                 this.noiseFilter.frequency.exponentialRampToValueAtTime(4500, now + 1.6);
                 this.noiseSlashSynth.triggerAttackRelease("2n", now + 0.3);
 
-                // 6-Note Circling Aerodynamic Flute Melody
-                const windMelody = ["E3", "G#3", "B3", "E4", "G#4", "B4"];
-                windMelody.forEach((n, idx) => {
+                ["E3", "G#3", "B3", "E4", "G#4", "B4"].forEach((n, idx) => {
                     this.fmLeadSynth.triggerAttackRelease(n, "16n", now + 0.4 + idx * 0.2);
                 });
-
-                // Sharp whoosh / sudden breath cutoff
                 this.noiseSlashSynth.triggerAttackRelease("16n", now + 2.3);
                 this.subImpactSynth.triggerAttackRelease("E1", "8n", now + 2.3);
                 break;
             }
-
-            // =========================================================
-            // 5. LIGHTNING (IKLAD): ELECTRICAL HUM -> RISING CRACKLE -> VIOLENT KRAK
-            // =========================================================
             case 'iklad': {
-                // Accelerating electrical buzz & tiny arcs snapping immediately
                 this.glitchSynth.triggerAttackRelease("D2", "8n", now);
                 this.glitchSynth.triggerAttackRelease("D3", "16n", now + 0.15);
                 this.glitchSynth.triggerAttackRelease("A3", "16n", now + 0.3);
 
-                // 6-Note Fast Biting Electric Melody
-                const sparkMelody = ["D3", "F#3", "A3", "C4", "E4", "A4"];
-                sparkMelody.forEach((n, idx) => {
+                ["D3", "F#3", "A3", "C4", "E4", "A4"].forEach((n, idx) => {
                     this.fmLeadSynth.triggerAttackRelease(n, "32n", now + 0.4 + idx * 0.14);
                 });
-
-                // Short violent KRAK (not a long thunderclap)
                 this.metallicSynth.triggerAttackRelease("D3", "64n", now + 2.0);
                 this.subImpactSynth.triggerAttackRelease("D1", "16n", now + 2.0);
                 break;
             }
-
-            // =========================================================
-            // 6. DARK (WORULIM): SUB-BASS DRONE -> REVERSED WHISPER -> ABRUPT MUFFLE
-            // =========================================================
             case 'worulim': {
-                // Deep vibration / sub-bass drone immediately
                 this.subImpactSynth.triggerAttackRelease("D1", "2n", now);
 
-                // Reversed whisper harmonic filter sweep
                 this.noiseFilter.frequency.setValueAtTime(1600, now + 0.1);
                 this.noiseFilter.frequency.exponentialRampToValueAtTime(90, now + 1.8);
                 this.noiseSlashSynth.triggerAttackRelease("2n", now + 0.1);
 
-                // 6-Note Eerie Descending Dissonant Melody (D3 -> C3 -> Ab2 -> F2 -> D2 -> Ab1)
-                const voidMelody = ["D3", "C3", "Ab2", "F2", "D2", "Ab1"];
-                voidMelody.forEach((n, idx) => {
+                ["D3", "C3", "Ab2", "F2", "D2", "Ab1"].forEach((n, idx) => {
                     this.glitchSynth.triggerAttackRelease(n, "8n", now + 0.3 + idx * 0.22);
                 });
-
-                // Sound absorption / abrupt silence muffle
                 this.droneFilter.frequency.setValueAtTime(70, now + 2.2);
                 break;
             }
-
-           // =========================================================
-            // 7. PURE MANA (AMIN): FRACTAL GLITCH COSMIC ASTRAL ENGINE
-            // =========================================================
             case 'amin': {
-                // 1. Immediate Fractal Data-Matrix Glitch Burst (0.0s - 0.4s)
-                const glitchStutter = ["D4", "A4", "F#5", "C#6", "A5", "D6"];
-                glitchStutter.forEach((pitch, i) => {
+                ["D4", "A4", "F#5", "C#6", "A5", "D6"].forEach((pitch, i) => {
                     this.glitchSynth.triggerAttackRelease(pitch, "64n", now + i * 0.05, 0.95);
                     this.chronoPluckSynth.triggerAttackRelease(pitch, now + i * 0.05);
                 });
 
-                // 2. Cosmic Astral Space Chord Bloom (0.35s - 2.8s)
                 this.polyChordSynth.triggerAttackRelease(["D3", "A3", "E4", "F#4", "C#5"], "2n", now + 0.35, 0.9);
                 this.fmLeadSynth.triggerAttackRelease("D3", "1n", now + 0.35, 0.85);
 
-                // 3. Shimmering Fractal Crystal Arpeggio (0.5s - 1.8s)
-                const fractalNotes = ["D4", "F#4", "A4", "C#5", "E5", "A5", "C#6", "D6"];
-                fractalNotes.forEach((note, idx) => {
+                ["D4", "F#4", "A4", "C#5", "E5", "A5", "C#6", "D6"].forEach((note, idx) => {
                     this.fmLeadSynth.triggerAttackRelease(note, "32n", now + 0.5 + idx * 0.14, 0.8);
-                    if (idx % 2 === 0) {
-                        this.metallicSynth.triggerAttackRelease(note, "64n", now + 0.5 + idx * 0.14);
-                    }
                 });
-
-                // 4. Second Wave Rapid Particle Glitch Cascades (1.8s - 2.4s)
-                ["C#6", "A5", "F#5", "E5", "A4", "D4"].forEach((p, i) => {
-                    this.glitchSynth.triggerAttackRelease(p, "64n", now + 1.8 + i * 0.06, 0.85);
-                });
-
-                // 5. Dimensional Astral Gong & Sub-Bass Core Implosion (2.2s)
                 this.subImpactSynth.triggerAttackRelease("D1", "2n", now + 2.2, 1.0);
                 this.metallicSynth.triggerAttackRelease("D2", "2n", now + 2.2, 0.9);
-                this.polyChordSynth.triggerAttackRelease(["D4", "A4", "F#5", "D6"], "1n", now + 2.2, 0.75);
                 break;
             }
-
-            // =========================================================
-            // 8. LIGHT (ERLAAW): SUBTLE CHOIR HARMONY + LOUD BELL RING
-            // =========================================================
             case 'erlaaw':
             default: {
-                // Subtle choir harmony starting immediately
                 this.choirFilter1.frequency.setValueAtTime(320, now);
                 this.choirFilter1.frequency.exponentialRampToValueAtTime(720, now + 1.2);
                 this.choirFilter2.frequency.setValueAtTime(850, now);
                 this.choirFilter2.frequency.exponentialRampToValueAtTime(1200, now + 1.2);
                 this.choirSynth.triggerAttackRelease(["G2", "D3", "B3"], 2.4, now);
 
-                // 6-Note Shimmering Celestial Melody
-                const lightChimes = ["G3", "B3", "D4", "F#4", "A4", "D5"];
-                lightChimes.forEach((n, idx) => {
+                ["G3", "B3", "D4", "F#4", "A4", "D5"].forEach((n, idx) => {
                     this.fmLeadSynth.triggerAttackRelease(n, "8n", now + 0.2 + idx * 0.2);
                 });
-
-                // Loud Cathedral Bell Ring
                 this.metallicSynth.triggerAttackRelease("G2", "1n", now + 1.8);
                 this.polyChordSynth.triggerAttackRelease(["G3", "D4", "B4"], "2n", now + 1.8);
                 break;
             }
         }
     }
+
+    // -------------------------------------------------------------
+    // 7. INTERACTIVE UI SOUND FX
+    // -------------------------------------------------------------
+    playNodeSelectAudio(nodeKey, elId) {
+        if (!this.isInitialized) return;
+        const now = Tone.now();
+        const notes = { alpha: "C4", beta: "E4", gamma: "G4" };
+        const p = notes[nodeKey] || "C4";
+        this.chronoPluckSynth.triggerAttackRelease(p, now);
+        this.fmLeadSynth.triggerAttackRelease(p, "32n", now + 0.04, 0.7);
+    }
+
+    playAstrolabeSnapAudio(phaseAngle) {
+        if (!this.isInitialized) return;
+        const now = Tone.now();
+        const chord = (phaseAngle === 60 || phaseAngle === 180) 
+            ? ["C4", "E4", "G4", "B4"] // Merkabah Lock
+            : ["D4", "A4", "D5"];      // Conjunction
+        this.polyChordSynth.triggerAttackRelease(chord, "16n", now, 0.8);
+        this.metallicSynth.triggerAttackRelease("C3", "32n", now, 0.6);
+    }
 }
 
 // Instantiate Global Engine
 const ArcaneAudio = new ArcaneAudioEngine();
 
-// UI Bridge Functions
+// -------------------------------------------------------------
+// GLOBAL CONTEXT-AWARE AUDIO TRIGGERS
+// -------------------------------------------------------------
 async function toggleArcaneBGM() {
     await ArcaneAudio.init();
     const btn = document.getElementById("audioToggleBtn");
@@ -784,8 +916,11 @@ async function toggleArcaneBGM() {
             btn.classList.remove("active");
         }
     } else {
-        if (typeof state !== "undefined") {
-            ArcaneAudio.startBGM(state);
+        const isArray = typeof arrayState !== "undefined" && arrayState.mode === "array";
+        const targetState = isArray ? arrayState : (typeof state !== "undefined" ? state : null);
+        
+        if (targetState) {
+            ArcaneAudio.startBGM(targetState);
         }
         if (btn) {
             btn.innerHTML = "<span>🔊</span> BGM: On";
@@ -795,16 +930,29 @@ async function toggleArcaneBGM() {
 }
 
 function playInscriptionAudio() {
-    if (typeof state !== "undefined") {
-        ArcaneAudio.init().then(() => {
+    const isArray = (typeof arrayState !== "undefined" && arrayState.mode === "array") ||
+                    document.getElementById("astrolabeInnerTriad") !== null;
+
+    ArcaneAudio.init().then(() => {
+        if (isArray && typeof arrayState !== "undefined") {
+            ArcaneAudio.playArrayManifestationBurst(arrayState);
+        } else if (typeof state !== "undefined") {
             ArcaneAudio.playManifestationBurst(state);
-        });
+        }
+    });
+}
+
+function syncAudioWithState() {
+    if (!ArcaneAudio) return;
+    const isArray = typeof arrayState !== "undefined" && arrayState.mode === "array";
+    const targetState = isArray ? arrayState : (typeof state !== "undefined" ? state : null);
+    if (targetState) {
+        ArcaneAudio.updateParameters(targetState);
     }
 }
 
-// Automatically syncs and updates BGM sounds in real-time when switching elements, delivery, or modifiers
-function syncAudioWithState() {
-    if (ArcaneAudio && typeof state !== "undefined") {
-        ArcaneAudio.updateParameters(state);
-    }
-}
+// Global window attachments
+window.ArcaneAudio = ArcaneAudio;
+window.toggleArcaneBGM = toggleArcaneBGM;
+window.playInscriptionAudio = playInscriptionAudio;
+window.syncAudioWithState = syncAudioWithState;
